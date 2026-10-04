@@ -117,6 +117,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .pv p{margin:0;padding:9px 12px 11px;font-size:12px;line-height:1.45;border-top:1px solid #111110}
 .pv p b{font-weight:700}
 .pv p .btn{display:block;margin-top:8px}
+.pv p a.btn{display:block;width:fit-content;text-decoration:none}
+.emb{position:relative;aspect-ratio:16/9;overflow:hidden;background:#000 center/cover no-repeat}
+.emb iframe{position:absolute;left:0;top:0;width:1280px;height:720px;border:0;transform-origin:0 0;pointer-events:none}
 
 .pb .body{background:#191918;color:#fff;overflow:hidden}
 .pb-view{position:relative;aspect-ratio:4/3;max-height:52vh;width:100%;background:#000}
@@ -958,6 +961,7 @@ const FILES=[
  {n:'experiment_003.jpg',k:'jpg',src:'p/img/anemoia-14.jpg',cap:'<b>Anemoia</b> — creación con IA.',pid:'anemoia',alt:'Imagen generada con IA del proyecto Anemoia.'},
  {n:'experiment_004.jpg',k:'jpg',src:'p/img/anemoia-10.jpg',cap:'<b>Anemoia</b> — creación con IA.',pid:'anemoia',alt:'Imagen generada con IA del proyecto Anemoia.'},
  {n:'mosaico.pde',k:'pde',thumb:1,cap:'<b>Imagen en movimiento</b> — Processing. Mueve el cursor por encima.',pid:'movimiento'},
+ {n:'lily.html',k:'html',thumb:1,src:'p/lily/index.html',poster:'p/img/lily.jpg',cap:'<b>Lily</b> — vídeo, SVG y GSAP: cuatro recuadros se mueven sobre la flor, unidos por líneas, con números que cambian.'},
  {n:'arduino_try_03.jpg',k:'jpg',src:'p/img/groc-4.jpg',w:340,cap:'<b>GROC</b> — la controladora: una esfera luminosa con Arduino.',pid:'groc',alt:'Una esfera amarilla encendida en una sala a oscuras.'},
  {n:'esfera_roja.jpg',k:'jpg',src:'p/img/groc-6.jpg',w:340,cap:'<b>GROC</b> — la controladora, en rojo.',pid:'groc',alt:'Dos manos sobre una esfera roja encendida.'},
  {n:'why_did_i_make_this.png',k:'jpg',src:'p/img/groc-3.jpg',cap:'<b>GROC</b> — pruebas de estrellas.',pid:'groc',alt:'Varias fotos de estrellas amarillas y de la esfera.'},
@@ -985,7 +989,8 @@ const CAPT={'creación con IA.':['creació amb IA.','made with AI.'],'Processing
  'pruebas de estrellas.':['proves d’estrelles.','star tests.'],'del proceso.':['del procés.','from the process.'],'guante impreso en 3D.':['guant imprès en 3D.','3D-printed glove.'],
  'el código que mantiene la tensión.':['el codi que manté la tensió.','the code that holds the tension.'],'en plató.':['al plató.','on set.'],'rodaje con Gravem.':['rodatge amb Gravem.','shoot with Gravem.'],
  'cartel de combate.':['cartell de combat.','fight card.'],'cartel de evento.':['cartell d’esdeveniment.','event poster.'],'Pica Pica, versión verde.':['Pica Pica, versió verda.','Pica Pica, green version.'],
- 'revista.':['revista.','magazine.'],'vídeo.':['vídeo.','video.']};
+ 'revista.':['revista.','magazine.'],'vídeo.':['vídeo.','video.'],
+ 'vídeo, SVG y GSAP: cuatro recuadros se mueven sobre la flor, unidos por líneas, con números que cambian.':['vídeo, SVG i GSAP: quatre requadres es mouen sobre la flor, units per línies, amb números que canvien.','video, SVG and GSAP: four squares drift over the flower, joined by lines, with numbers that keep changing.']};
 const capL=c=>{if(lang==='es')return c;const i=c.indexOf(' — '),k=i<0?c:c.slice(i+3),t=CAPT[k];return t?(i<0?'':c.slice(0,i+3))+t[lang==='ca'?0:1]:c};
 const pgEl=$('#pg'),pgField=$('#pgfield');let pgBuilt=false,pgMode='mess';
 const pgThumb=f=>'p/pt/'+f.n.replace(/\.\w+$/,'')+'.jpg';
@@ -994,6 +999,8 @@ function pgOpen(f){
   if(f.k==='mov'){const fresh=!document.getElementById('w-pf-'+f.n);
     const el=win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:320,x:.5,y:.46,html:`<video src="${f.src}" poster="${f.poster}" controls playsinline preload="none" aria-label="${esc(f.n)}"></video><p>${capL(f.cap)}</p>`});
     if(fresh)$('video',el).addEventListener('play',()=>{if(sp&&playing)try{sp.pause()}catch(_){}});return el}
+  if(f.k==='html'){const el=win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:640,x:.5,y:.46,html:`<div class="emb" style="background-image:url(${f.poster})"><iframe src="${f.src}" title="${esc(f.n)}" tabindex="-1"></iframe></div><p>${capL(f.cap)}<a class="btn" href="${f.src}" target="_blank" rel="noopener">OPEN FULL SCREEN ↗</a></p>`});
+    const e=$('.emb',el);$('iframe',e).style.transform=`scale(${e.clientWidth/1280})`;return el}
   if(f.k==='web')return alertWin({id:'w-pf-web',mark:'↗',title:f.label,text:`<a href="${f.url}" target="_blank" rel="noopener">${f.url.replace('https://www.','')}</a>`,buttons:[{label:'CLOSE',pri:1}]});
   if(f.k==='pde'){const fresh=!document.getElementById('w-pf-sk');
     const el=win({id:'w-pf-sk',title:f.n,cls:'pv',w:420,x:.5,y:.46,html:`<div class="sk-win"><canvas width="600" height="600" aria-label="Mosaico interactivo: mueve el cursor para cambiar el tamaño de los rectángulos"></canvas><div class="sk-pick">${[1,2,3].map(i=>`<button type="button" data-n="${i}" aria-pressed="${i===1}" aria-label="Imagen ${i}"><img src="p/img/sk-${i}.jpg" alt=""></button>`).join('')}</div></div><p>${capL(f.cap)}<button type="button" class="btn" data-p="${f.pid}">OPEN PROJECT</button></p>`});
