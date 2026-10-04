@@ -577,7 +577,7 @@ document.addEventListener('pointerdown',e=>{if(!e.target.closest('.dot'))hideDot
 const PLAYLIST='1vwP2i7MblzSlrk4iXS9m0';
 const fm=$('#fm');let sp=null,spState='loading',playing=false,wantPlay=false;
 /* one song at a time: when Spotify would jump to the next song by itself, we pause and let the visitor choose */
-let lastURI='',lastPos=0,lastDur=0,wasPaused=true,cut=0,ended=false,allowNext=false,touch=0;
+let lastURI='',lastPos=0,lastDur=0,wasPaused=true,ended=false,allowNext=false,touch=0;
 const mmss=ms=>{const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function fmUI(pos,dur){fm.classList.toggle('playing',playing);
   $('#fmplay').setAttribute('aria-label',playing?'Pause':'Play');
@@ -600,12 +600,11 @@ function fmUpdate(d){
   if(lastURI&&uri&&uri!==lastURI){
     const byUser=Date.now()-touch<2500||allowNext||wasPaused;allowNext=false;
     const fullEnd=lastDur>60000&&lastPos>=lastDur-2500;           /* a whole song finished: keep going */
-    const midway=cut>0&&Math.abs(lastPos-cut)>2500&&lastPos<lastDur-2500; /* changed far from where previews end: a choice */
-    if(!byUser&&!fullEnd&&!midway){if(lastPos>3000&&lastPos<lastDur-2500)cut=lastPos;stop=true}
+    if(!byUser&&!fullEnd)stop=true;
     else{ended=false;$('#fmname').textContent="ainoa's playlist"}
   }else if(!d.isPaused&&!ended&&!allowNext){
-    const lim=dur&&dur<=60000?dur:(cut&&dur>cut+5000?cut:0);       /* where this preview will end */
-    if(lim&&pos>=lim-1200)stop=true;
+    /* previews have no fixed length, so we only stop early when Spotify itself reports a short clip */
+    if(dur&&dur<=60000&&pos>=dur-1200)stop=true;
   }
   lastURI=uri||lastURI;lastPos=pos;lastDur=dur;wasPaused=!!d.isPaused;
   if(stop){fmStop();wasPaused=true}else playing=!d.isPaused;
