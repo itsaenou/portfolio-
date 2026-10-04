@@ -51,7 +51,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 :root[data-tint] .who:hover{color:inherit}
 .caret{display:inline-block;width:.045em;height:.78em;margin-left:.06em;background:currentColor;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-.files{grid-column:11/13;grid-row:2;align-self:start;justify-self:end;margin:9vh 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:22px;align-items:center}
+.files{grid-column:11/13;grid-row:2;align-self:start;justify-self:end;margin:7vh 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:20px;align-items:center}
 .file{display:flex;flex-direction:column;align-items:center;gap:6px;width:112px;font:11px/1.25 var(--sys);text-align:center}
 .file i{display:block;width:26px;height:33px;background:var(--paper);border:1px solid #111110;position:relative}
 .file i::after{content:"";position:absolute;right:-1px;top:-1px;width:8px;height:8px;background:var(--bg);border-left:1px solid #111110;border-bottom:1px solid #111110;transition:background-color .35s}
@@ -168,6 +168,21 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .rn input{display:block;width:100%;font:13px var(--mono);padding:5px 7px;border:1px solid #111110;border-radius:4px;background:#fff;color:#111110;text-transform:uppercase}
 .rn input:focus{outline:2px solid var(--blue);outline-offset:1px}
 .rn .row{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+
+/* things_i_like.txt — a plain list, like a Finder list view */
+.likes .body{display:flex;flex-direction:column}
+.lk-f{display:flex;flex-wrap:wrap;gap:4px 12px;padding:10px 14px;border-bottom:1px solid #111110;font-size:11px;letter-spacing:.06em}
+.lk-f button{padding:1px 4px;margin-left:-4px;color:var(--wmute)}
+.lk-f button:hover,.lk-f button:focus-visible{background:var(--yellow);color:#111110}
+.lk-f button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.lk-wrap{overflow:auto}
+.lk{width:100%;border-collapse:collapse;font-size:12px;line-height:1.4}
+.lk th{text-align:left;font-weight:400;font-size:10px;letter-spacing:.08em;color:var(--wmute);padding:8px 14px;border-bottom:1px solid #11111022;white-space:nowrap}
+.lk td{padding:10px 14px;border-bottom:1px solid #11111014;vertical-align:top}
+.lk td:first-child{font:14px/1.3 var(--sans)}
+.lk td a{color:inherit;text-underline-offset:3px}
+.lk td a:hover{background:var(--yellow)}
+.lk-n{padding:8px 14px;font:10px var(--mono);color:var(--wmute)}
 
 /* ───────── AINOA.FM ───────── */
 .fm{position:fixed;z-index:90;right:var(--gut);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:236px;max-width:calc(100% - 2*var(--gut));background:var(--paper);color:#111110;border:1px solid #111110;border-radius:7px;overflow:hidden;font-family:var(--sys)}
@@ -379,6 +394,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <li><button type="button" class="file" data-go="note"><i aria-hidden="true"></i><span>who_is_ainoa.txt</span></button></li>
     <li><button type="button" class="file" data-go="help"><i aria-hidden="true"></i><span>HELP!.rtf</span></button></li>
     <li><button type="button" class="file" data-go="rename"><i aria-hidden="true"></i><span id="jobfile">GRAPHIC DESIGNER</span></button></li>
+    <li><button type="button" class="file" data-go="likes"><i aria-hidden="true"></i><span>things_i_like.txt</span></button></li>
   </ul>
 </main>
 
@@ -575,8 +591,26 @@ const OPEN={
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&OPEN[b.dataset.go])OPEN[b.dataset.go]()});
 
+/* ✏️ things Ainoa likes. Only what she has given: title, kind, who it is by, and — when she writes one — her own line about it. */
+const LIKES=[
+ {t:'Rodeados de idiotas',k:'book',by:'Thomas Erikson',note:'',url:''}
+];
+const KINDS={book:['BOOK','BOOKS'],film:['FILM','FILMS'],theatre:['THEATRE','THEATRE'],museum:['MUSEUM','MUSEUMS'],exhibition:['EXHIBITION','EXHIBITIONS']};
+OPEN.likes=()=>{
+  const fresh=!document.getElementById('w-likes');
+  const el=win({id:'w-likes',title:'things_i_like.txt',cls:'likes',w:520,x:.6,y:.44,html:`<div class="lk-f" role="group" aria-label="Filter by kind"></div><div class="lk-wrap"><table class="lk"><thead></thead><tbody></tbody></table></div><div class="lk-n"></div>`});
+  if(!fresh)return el;let kind='';
+  const notes=LIKES.some(l=>l.note);
+  const draw=()=>{const rows=LIKES.filter(l=>!kind||l.k===kind);
+    $('.lk-f',el).innerHTML=`<button type="button" data-k="" aria-pressed="${!kind}">ALL</button>`+Object.keys(KINDS).filter(k=>LIKES.some(l=>l.k===k)).map(k=>`<button type="button" data-k="${k}" aria-pressed="${kind===k}">${KINDS[k][1]}</button>`).join('');
+    $('thead',el).innerHTML=`<tr><th scope="col">TITLE</th><th scope="col">KIND</th><th scope="col">BY</th>${notes?'<th scope="col">NOTE</th>':''}</tr>`;
+    $('tbody',el).innerHTML=rows.map(l=>`<tr><td>${l.url?`<a href="${l.url}" target="_blank" rel="noopener">${esc(l.t)} ↗</a>`:esc(l.t)}</td><td>${KINDS[l.k][0]}</td><td>${esc(l.by||'')}</td>${notes?`<td>${esc(l.note||'')}</td>`:''}</tr>`).join('');
+    $('.lk-n',el).textContent=rows.length+(rows.length===1?' item':' items')};
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){kind=b.dataset.k;draw()}});
+  draw();return el};
+
 /* WHO IS SHE? — each click opens the next clue */
-const CLUES=['booth','note','help','rename'];let clue=0;
+const CLUES=['booth','note','help','rename','likes'];let clue=0;
 $('#who').addEventListener('click',()=>{OPEN[CLUES[clue++%CLUES.length]]()});
 
 /* ───────── HELP! — drag, delete, rename, type your own ───────── */
