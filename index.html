@@ -169,20 +169,31 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .rn input:focus{outline:2px solid var(--blue);outline-offset:1px}
 .rn .row{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 
-/* things_i_like.txt — a plain list, like a Finder list view */
+/* things_i_like.txt — loose objects: drag them around, click one to open it */
 .likes .body{display:flex;flex-direction:column}
 .lk-f{display:flex;flex-wrap:wrap;gap:4px 12px;padding:10px 14px;border-bottom:1px solid #111110;font-size:11px;letter-spacing:.06em}
 .lk-f button{padding:1px 4px;margin-left:-4px;color:var(--wmute)}
 .lk-f button:hover,.lk-f button:focus-visible{background:var(--yellow);color:#111110}
 .lk-f button[aria-pressed="true"]{background:var(--blue);color:#fff}
-.lk-wrap{overflow:auto}
-.lk{width:100%;border-collapse:collapse;font-size:12px;line-height:1.4}
-.lk th{text-align:left;font-weight:400;font-size:10px;letter-spacing:.08em;color:var(--wmute);padding:8px 14px;border-bottom:1px solid #11111022;white-space:nowrap}
-.lk td{padding:10px 14px;border-bottom:1px solid #11111014;vertical-align:top}
-.lk td:first-child{font:14px/1.3 var(--sans)}
-.lk td a{color:inherit;text-underline-offset:3px}
-.lk td a:hover{background:var(--yellow)}
-.lk-n{padding:8px 14px;font:10px var(--mono);color:var(--wmute)}
+.lk-field{display:flex;flex-wrap:wrap;align-content:flex-start;gap:24px 14px;padding:24px 18px 28px;min-height:200px;overflow:hidden}
+.lk-it{width:112px;display:flex;flex-direction:column;align-items:center;gap:8px;font:11px/1.25 var(--sys);text-align:center;touch-action:none;transform:translate(var(--x,0px),var(--y,0px))}
+.lk-it.drag{position:relative;z-index:3;cursor:grabbing}
+.lk-it img{display:block;max-width:92px;max-height:96px;width:auto;height:auto;background:#fff;padding:3px;border:1px solid #111110;pointer-events:none;user-select:none}
+.lk-it span{padding:1px 5px;border-radius:3px;overflow-wrap:anywhere;max-width:100%}
+.lk-it:hover span,.lk-it:focus-visible span{background:var(--blue);color:#fff}
+.lk-it:focus-visible{outline:none}
+/* generic stand-ins until Ainoa adds her own photo: a plain book, a strip of film, a ticket */
+.lk-o{display:grid;place-items:center;background:#fff;color:#111110;border:1px solid #111110;font:8px/1.3 var(--mono);letter-spacing:.08em;padding:6px;overflow:hidden;text-align:center}
+.lk-o.book{width:60px;height:84px;border-left-width:7px}
+.lk-o.film{width:94px;height:60px;border-top:8px dashed #111110;border-bottom:8px dashed #111110}
+.lk-o.theatre,.lk-o.museum,.lk-o.exhibition{width:72px;height:72px;border-style:dashed}
+.lk-big{display:grid;place-items:center;padding:34px 20px;background:#eeeeea}
+.lk-big .lk-o{font:14px/1.25 var(--sans);letter-spacing:0;padding:14px}
+.lk-big .lk-o.book{width:150px;height:210px;border-left-width:16px}
+.lk-big .lk-o.film{width:236px;height:150px;border-top-width:18px;border-bottom-width:18px}
+.lk-big .lk-o.theatre,.lk-big .lk-o.museum,.lk-big .lk-o.exhibition{width:180px;height:180px}
+.lkd p q{display:block;margin-top:6px;font:14px/1.4 var(--sans);quotes:"“" "”"}
+.lk-n{padding:8px 14px;font:10px var(--mono);color:var(--wmute);border-top:1px solid #11111022}
 
 /* ───────── AINOA.FM ───────── */
 .fm{position:fixed;z-index:90;right:var(--gut);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:236px;max-width:calc(100% - 2*var(--gut));background:var(--paper);color:#111110;border:1px solid #111110;border-radius:7px;overflow:hidden;font-family:var(--sys)}
@@ -591,22 +602,34 @@ const OPEN={
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&OPEN[b.dataset.go])OPEN[b.dataset.go]()});
 
-/* ✏️ things Ainoa likes. Only what she has given: title, kind, who it is by, and — when she writes one — her own line about it. */
+/* ✏️ things Ainoa likes. Only what she has given: title, kind, who it is by, her own line about it, and — when she
+   sends one — her own photo (img). Without a photo the object is a plain generic shape, never the real cover. */
 const LIKES=[
- {t:'Rodeados de idiotas',k:'book',by:'Thomas Erikson',note:'',url:''}
+ {t:'Rodeados de idiotas',k:'book',by:'Thomas Erikson',note:'',img:'',url:''},
+ {t:'Parásitos',k:'film',by:'Bong Joon-ho',note:'Increíble película de principio a fin.',img:'',url:''}
 ];
 const KINDS={book:['BOOK','BOOKS'],film:['FILM','FILMS'],theatre:['THEATRE','THEATRE'],museum:['MUSEUM','MUSEUMS'],exhibition:['EXHIBITION','EXHIBITIONS']};
+function likeOpen(l,i){
+  win({id:'w-like-'+i,title:l.t,cls:'pv lkd',w:l.k==='film'?360:300,x:.42+(i%4)*.05,y:.5,html:(l.img?`<img src="${l.img}" alt="${esc(l.t)}">`:`<div class="lk-big"><div class="lk-o ${l.k}">${esc(l.t)}</div></div>`)+
+    `<p><b>${esc(l.t)}</b>${l.by?' — '+esc(l.by):''}<br>${KINDS[l.k][0]}${l.note?`<q>${esc(l.note)}</q>`:''}${l.url?`<a class="btn" href="${l.url}" target="_blank" rel="noopener">OPEN ↗</a>`:''}</p>`})}
 OPEN.likes=()=>{
   const fresh=!document.getElementById('w-likes');
-  const el=win({id:'w-likes',title:'things_i_like.txt',cls:'likes',w:520,x:.6,y:.44,html:`<div class="lk-f" role="group" aria-label="Filter by kind"></div><div class="lk-wrap"><table class="lk"><thead></thead><tbody></tbody></table></div><div class="lk-n"></div>`});
-  if(!fresh)return el;let kind='';
-  const notes=LIKES.some(l=>l.note);
-  const draw=()=>{const rows=LIKES.filter(l=>!kind||l.k===kind);
+  const el=win({id:'w-likes',title:'things_i_like.txt',cls:'likes',w:520,x:.6,y:.44,html:`<div class="lk-f" role="group" aria-label="Filter by kind"></div><div class="lk-field"></div><div class="lk-n"></div>`});
+  if(!fresh)return el;let kind='';const field=$('.lk-field',el);
+  const draw=()=>{const rows=LIKES.map((l,i)=>[l,i]).filter(([l])=>!kind||l.k===kind);
     $('.lk-f',el).innerHTML=`<button type="button" data-k="" aria-pressed="${!kind}">ALL</button>`+Object.keys(KINDS).filter(k=>LIKES.some(l=>l.k===k)).map(k=>`<button type="button" data-k="${k}" aria-pressed="${kind===k}">${KINDS[k][1]}</button>`).join('');
-    $('thead',el).innerHTML=`<tr><th scope="col">TITLE</th><th scope="col">KIND</th><th scope="col">BY</th>${notes?'<th scope="col">NOTE</th>':''}</tr>`;
-    $('tbody',el).innerHTML=rows.map(l=>`<tr><td>${l.url?`<a href="${l.url}" target="_blank" rel="noopener">${esc(l.t)} ↗</a>`:esc(l.t)}</td><td>${KINDS[l.k][0]}</td><td>${esc(l.by||'')}</td>${notes?`<td>${esc(l.note||'')}</td>`:''}</tr>`).join('');
-    $('.lk-n',el).textContent=rows.length+(rows.length===1?' item':' items')};
-  el.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){kind=b.dataset.k;draw()}});
+    field.innerHTML=rows.map(([l,i])=>`<button type="button" class="lk-it" data-i="${i}">${l.img?`<img src="${l.img}" alt="" draggable="false">`:`<i class="lk-o ${l.k}" aria-hidden="true">${KINDS[l.k][0]}</i>`}<span>${esc(l.t)}</span></button>`).join('');
+    $('.lk-n',el).textContent=rows.length+(rows.length===1?' item':' items')+' · drag them, click to open'};
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){kind=b.dataset.k;draw();return}
+    const it=e.target.closest('.lk-it');if(it&&e.detail===0)likeOpen(LIKES[+it.dataset.i],+it.dataset.i)});
+  let down=null,moved=false;
+  field.addEventListener('pointerdown',e=>{const it=e.target.closest('.lk-it');if(!it)return;const r=it.getBoundingClientRect(),f=field.getBoundingClientRect();
+    down={it,x:e.clientX,y:e.clientY,ox:parseFloat(it.style.getPropertyValue('--x'))||0,oy:parseFloat(it.style.getPropertyValue('--y'))||0,
+      minx:f.left-r.left,maxx:f.right-r.right,miny:f.top-r.top,maxy:f.bottom-r.bottom};moved=false;it.setPointerCapture(e.pointerId)});
+  field.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;down.it.classList.add('drag');
+    down.it.style.setProperty('--x',(down.ox+Math.max(down.minx,Math.min(down.maxx,dx)))+'px');down.it.style.setProperty('--y',(down.oy+Math.max(down.miny,Math.min(down.maxy,dy)))+'px')});
+  const up=e=>{if(!down)return;const it=down.it;down=null;it.classList.remove('drag');if(!moved&&e.type==='pointerup')likeOpen(LIKES[+it.dataset.i],+it.dataset.i)};
+  field.addEventListener('pointerup',up);field.addEventListener('pointercancel',up);
   draw();return el};
 
 /* WHO IS SHE? — each click opens the next clue */
