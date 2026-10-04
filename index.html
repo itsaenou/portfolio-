@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Ainoa's Personal Internet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Reenie+Beanie&display=swap">
+<style>
+/* Layout: one quiet desktop. Small type pinned to the corners, the portrait floating
+   off-centre, one large typed question at the bottom. Everything else arrives as a window. */
+:root{
+  --bg:#f3f3f0; --fg:#111110; --paper:#ffffff; --mute:#84847e; --wmute:#84847e;
+  --red:#ff2a1a; --blue:#1f3fff; --yellow:#ffe500;
+  --sans:"Helvetica Neue",Helvetica,Arimo,Arial,sans-serif;
+  --sys:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Arimo,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --hand:"Reenie Beanie","Bradley Hand","Segoe Script",cursive;
+  --gut:clamp(16px,2.4vw,36px);
+}
+:root[data-tint="red"]{--bg:var(--red)}
+:root[data-tint="yellow"]{--bg:var(--yellow)}
+:root[data-tint="blue"]{--bg:var(--blue);--fg:#ffffff;--mute:#ffffffb0}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font:13px/1.35 var(--sans);-webkit-font-smoothing:antialiased;transition:background-color .35s}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+::selection{background:var(--yellow);color:#111110}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+:root[data-tint="blue"] :focus-visible{outline-color:#fff}
+
+/* ───────── desktop ───────── */
+.desk{position:relative;isolation:isolate;min-height:100%;background:var(--bg);transition:background-color .35s;
+  padding-block:20px 24px;padding-inline:var(--gut);overflow-x:clip;
+  display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:auto 1fr auto;column-gap:16px}
+.id{grid-column:1/6;grid-row:1}
+.id b{display:block;font-weight:400;letter-spacing:.04em}
+.meta{grid-column:9/13;grid-row:1;text-align:right;font-family:var(--sys);font-size:12px;font-variant-numeric:tabular-nums}
+.meta span{display:block}
+.nav{grid-column:1/3;grid-row:2;align-self:center;display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:-6vh}
+.nav button{letter-spacing:.04em;padding:1px 3px;margin-left:-3px}
+.nav button:hover,.nav button:focus-visible{background:var(--yellow);color:#111110}
+.me{grid-column:5/10;grid-row:2;align-self:center;justify-self:center;position:relative;margin:4vh 0 0;height:min(60vh,580px);aspect-ratio:1232/1400;max-width:100%}
+.me>img{display:block;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;user-select:none;-webkit-user-drag:none;
+  -webkit-mask-image:linear-gradient(#000 88%,transparent),linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);
+  -webkit-mask-composite:source-in;mask-image:linear-gradient(#000 88%,transparent),linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-composite:intersect}
+.hand{position:absolute;left:-37%;top:25%;margin:0;font:26px/1 var(--hand);color:var(--blue);transform:rotate(-5deg);white-space:nowrap;pointer-events:none}
+:root[data-tint="blue"] .hand{color:#fff}
+.who{grid-column:1/10;grid-row:3;align-self:end;justify-self:start;font-size:clamp(44px,8.4vw,128px);line-height:.9;letter-spacing:-.045em;white-space:nowrap}
+.who:hover{color:var(--blue)}
+:root[data-tint] .who:hover{color:inherit}
+.caret{display:inline-block;width:.045em;height:.78em;margin-left:.06em;background:currentColor;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.files{grid-column:11/13;grid-row:2;align-self:start;justify-self:end;margin:9vh 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:22px;align-items:center}
+.file{display:flex;flex-direction:column;align-items:center;gap:6px;width:112px;font:11px/1.25 var(--sys);text-align:center}
+.file i{display:block;width:26px;height:33px;background:var(--paper);border:1px solid #111110;position:relative}
+.file i::after{content:"";position:absolute;right:-1px;top:-1px;width:8px;height:8px;background:var(--bg);border-left:1px solid #111110;border-bottom:1px solid #111110;transition:background-color .35s}
+.file span{padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+.file:hover span,.file:focus-visible span{background:var(--blue);color:#fff}
+.file:focus-visible{outline:none}
+
+/* ───────── dots ───────── */
+.dot{position:absolute;left:calc(var(--x)*1%);top:calc(var(--y)*1%);width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
+  background:#fff;border:1px solid #111110;z-index:5;touch-action:none;
+  transition:width .28s cubic-bezier(.3,1.2,.4,1),height .28s cubic-bezier(.3,1.2,.4,1),margin .28s cubic-bezier(.3,1.2,.4,1)}
+.dot::before{content:"";position:absolute;inset:-9px;border-radius:50%}
+.dot img,.dot .nf{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;opacity:0;transition:opacity .2s;pointer-events:none}
+.dot img{object-fit:cover;object-position:var(--p,50% 50%)}
+.dot .nf{display:grid;place-items:center;background:var(--paper);font:28px var(--sys);color:var(--wmute)}
+.dot .lb{position:absolute;left:calc(100% + 5px);top:50%;transform:translateY(-50%);font:10px/1 var(--mono);color:#111110;background:#fff;padding:2px 3px;white-space:nowrap;pointer-events:none}
+.dot .lb em{display:none;font-style:normal}
+.dot.on{--s:168px;width:var(--s);height:var(--s);margin:calc(var(--s)/-2) 0 0 calc(var(--s)/-2);z-index:20;cursor:pointer}
+.dot.on img,.dot.on .nf{opacity:1}
+.dot.on .lb{left:50%;top:calc(100% + 8px);transform:translateX(-50%)}
+.dot.on .lb em{display:inline}
+.dot.drag{transition:none;cursor:grabbing}
+.dot:focus-visible{outline-offset:3px}
+
+/* ───────── windows ───────── */
+.win{position:fixed;z-index:100;display:flex;flex-direction:column;max-height:calc(100% - 16px);background:var(--paper);color:#111110;
+  border:1px solid #111110;border-radius:7px;box-shadow:0 18px 44px -18px #11111066;font-family:var(--sys);overflow:hidden;animation:open .16s ease-out}
+@keyframes open{from{opacity:0;transform:scale(.97)}}
+.bar{flex:none;display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-bottom:1px solid #111110;cursor:grab;user-select:none;touch-action:none;position:relative}
+.bar:active{cursor:grabbing}
+.bar .x,.bar i{flex:none;width:10px;height:10px;border-radius:50%;border:1px solid #111110;background:#fff}
+.bar .x{position:relative}
+.bar .x::before{content:"";position:absolute;inset:-9px}
+.bar .x:hover,.bar .x:focus-visible{background:var(--red)}
+.bar b{position:absolute;left:60px;right:60px;text-align:center;font-weight:400;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.body{overflow:auto;min-height:0}
+.btn{font:12px var(--sys);letter-spacing:.04em;padding:5px 14px;border:1px solid #111110;border-radius:5px;background:#fff;color:#111110;white-space:nowrap}
+.btn:hover{background:#111110;color:#fff}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.pri:hover{background:#111110;border-color:#111110}
+.win :focus-visible{outline-color:var(--blue)}
+
+.alert .bar{display:none}
+.alert .body{padding:18px 18px 14px;display:grid;grid-template-columns:auto 1fr;gap:12px 14px}
+.alert .ic{width:34px;height:34px;border-radius:50%;border:1px solid #111110;display:grid;place-items:center;font:700 18px var(--sans)}
+.alert h2{margin:0 0 4px;font:700 13px/1.3 var(--sys)}
+.alert p{margin:0;font-size:12px;line-height:1.5}
+.alert p a{color:var(--blue)}
+.alert .row{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:6px}
+.sel{user-select:all;font-family:var(--mono);font-size:12px}
+#scrim{position:fixed;inset:0;z-index:95;background:#f3f3f08c}
+
+.pv .body{display:flex;flex-direction:column}
+.pv img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#eeeeea}
+.pv p{margin:0;padding:9px 12px 11px;font-size:12px;line-height:1.45;border-top:1px solid #111110}
+.pv p b{font-weight:700}
+.pv p .btn{display:block;margin-top:8px}
+
+.pb .body{background:#191918;color:#fff;overflow:hidden}
+.pb-view{position:relative;aspect-ratio:4/3;max-height:52vh;width:100%;background:#000}
+.pb-view img{display:block;width:100%;height:100%;object-fit:contain}
+.pb-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.pb-flash.go{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:1}100%{opacity:0}}
+.pb-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:9px 12px;font:11px var(--mono)}
+.pb-bar span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.pb-shot{width:38px;height:38px;border-radius:50%;background:var(--red);border:3px solid #fff;box-shadow:0 0 0 1px #000 inset}
+.pb-shot:hover{filter:brightness(1.15)}
+.pb-shot:focus-visible,.pb-tray button:focus-visible{outline-color:#fff}
+.pb-tray{display:flex;gap:6px;padding:0 12px 12px;overflow-x:auto;scrollbar-width:thin}
+.pb-tray button{flex:0 0 58px;aspect-ratio:4/3;border:1px solid #ffffff55;overflow:hidden;opacity:.55}
+.pb-tray button[aria-current="true"]{opacity:1;border-color:#fff}
+.pb-tray img{display:block;width:100%;height:100%;object-fit:cover}
+
+.txt .body{padding:16px 18px 20px;font:12.5px/1.7 var(--mono)}
+.txt p{margin:0 0 1.1em;max-width:62ch}
+.txt p:last-child{margin:0}
+
+.help .body{padding:18px 20px 16px;font:15px/1.5 var(--sans);letter-spacing:.02em}
+.help h2{margin:0 0 10px;font:400 34px/1 var(--sans);letter-spacing:-.03em;color:var(--red)}
+.help p{margin:0}
+.roles{list-style:none;margin:2px 0;padding:0}
+.roles li{display:flex;align-items:center;gap:6px;min-height:24px}
+.role .t{cursor:grab;touch-action:none;padding:0 3px;margin-left:-3px;border-radius:2px;outline:none}
+.role:hover .t,.role .t:focus-visible{background:var(--yellow)}
+.role .t[contenteditable="true"]{cursor:text;background:#fff;box-shadow:0 0 0 2px var(--blue)}
+.role.moving{opacity:.4}
+.role .sl{color:var(--wmute)}
+.role .del{width:18px;height:18px;border-radius:50%;border:1px solid #111110;font:12px/1 var(--sys);text-align:center;opacity:0;margin-left:4px}
+.role:hover .del,.role .del:focus-visible,.role:focus-within .del{opacity:1}
+.role .del:hover{background:var(--red);border-color:var(--red);color:#fff}
+.blank input{font:inherit;letter-spacing:inherit;color:inherit;border:0;border-bottom:1px solid #111110;background:none;width:11em;max-width:100%;padding:0;border-radius:0;text-transform:uppercase}
+.blank input::placeholder{color:transparent}
+.blank input:focus{outline:none;border-bottom-color:var(--blue);box-shadow:0 1px 0 var(--blue)}
+.help footer{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin-top:16px;padding-top:10px;border-top:1px solid #11111022;font:11px/1.4 var(--sys);letter-spacing:0;color:var(--wmute)}
+
+.rn .body{padding:16px 18px 14px;font-size:12px}
+.rn label{display:block;margin-bottom:8px}
+.rn .old{font:13px var(--mono);color:var(--wmute);text-decoration:line-through}
+.rn .arrow{display:block;margin:4px 0 6px;font-size:14px}
+.rn input{display:block;width:100%;font:13px var(--mono);padding:5px 7px;border:1px solid #111110;border-radius:4px;background:#fff;color:#111110;text-transform:uppercase}
+.rn input:focus{outline:2px solid var(--blue);outline-offset:1px}
+.rn .row{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+
+/* ───────── AINOA.FM ───────── */
+.fm{position:fixed;z-index:90;right:var(--gut);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:236px;max-width:calc(100% - 2*var(--gut));background:var(--paper);color:#111110;border:1px solid #111110;border-radius:7px;overflow:hidden;font-family:var(--sys)}
+.fm.open{width:340px}
+.fm .bar{cursor:default;height:22px}
+.fm .bar b{left:10px;right:10px;font-size:11px;letter-spacing:.08em}
+.fm-main{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:9px 10px 8px}
+.fm-play{width:32px;height:32px;border-radius:50%;border:1px solid #111110;background:#fff;color:#111110;display:grid;place-items:center;text-decoration:none;font-size:14px;line-height:1}
+.fm-play:hover{background:#111110;color:#fff}
+.fm-play:disabled{opacity:.35;cursor:default;background:#fff;color:#111110}
+.fm-play svg{display:block;width:12px;height:12px;fill:currentColor}
+.fm-play .pa{display:none}
+.fm.playing .fm-play .pl{display:none}
+.fm.playing .fm-play .pa{display:block}
+.fm-t{min-width:0}
+.fm-k{display:flex;justify-content:space-between;gap:8px;font-size:9px;letter-spacing:.1em;color:var(--wmute);font-variant-numeric:tabular-nums}
+.fm-n{font:11px/1.3 var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fm-list{height:0;overflow:hidden}
+.fm.open .fm-list{height:352px;border-top:1px solid #111110}
+.fm-list iframe{display:block;width:100%;height:352px;border:0}
+.fm-foot{display:flex;align-items:center;gap:10px;padding:6px 10px 8px;border-top:1px solid #11111022;font-size:10px;letter-spacing:.1em}
+.fm-foot button,.fm-foot a{color:#111110;text-decoration:none;padding:1px 3px;white-space:nowrap}
+.fm-foot a{margin-left:auto}
+.fm-foot button:hover,.fm-foot a:hover,.fm-foot button:focus-visible,.fm-foot a:focus-visible{background:var(--yellow)}
+.eq{display:flex;align-items:flex-end;gap:2px;height:10px}
+.eq i{width:2px;height:2px;background:#111110}
+.fm.playing .eq i{animation:eq .9s ease-in-out infinite alternate}
+.fm.playing .eq i:nth-child(2){animation-delay:-.3s}.fm.playing .eq i:nth-child(3){animation-delay:-.6s}.fm.playing .eq i:nth-child(4){animation-delay:-.15s}
+@keyframes eq{to{height:10px}}
+
+/* ───────── WORK: index + project pages (clear, calm, lets the work speak) ───────── */
+.work{--cbg:#f3f3f0;--cfg:#111110;--cmute:#84847e;--cline:#11111024;--cstage:#e8e8e3;--acc:var(--yellow);
+  position:fixed;inset:0;z-index:60;overflow-y:auto;overflow-x:hidden;background:var(--cbg);color:var(--cfg);
+  padding:env(safe-area-inset-top,0px) var(--gut) 0;transition:background-color .3s,color .3s}
+.work[data-tone="dark"]{--cbg:#0f0f0e;--cfg:#f3f3f0;--cmute:#9c9c95;--cline:#ffffff2b;--cstage:#1c1c1a}
+.work :focus-visible{outline-color:var(--cfg)}
+.wbar{position:sticky;top:0;z-index:3;display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;padding-block:20px 12px;background:var(--cbg);transition:background-color .3s;letter-spacing:.04em}
+.wbar nav{display:flex;flex-wrap:wrap;gap:4px 18px}
+.wbar button{padding:1px 3px;margin-left:-3px}
+.wbar button:hover,.wbar button:focus-visible{background:var(--yellow);color:#111110}
+.wbar [aria-current="page"]{text-decoration:underline;text-underline-offset:4px}
+
+.widx{padding-block:9vh 180px}
+.widx h1{margin:0 0 5vh;font:400 13px/1.35 var(--sans);letter-spacing:.04em;display:flex;gap:1.2em}
+.widx h1 span{color:var(--cmute);font-variant-numeric:tabular-nums}
+.rows{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:3.4em minmax(0,1fr) minmax(0,1.5fr) 5.2em;column-gap:18px;align-items:baseline;width:100%;padding-block:.36em;
+  font-size:clamp(15px,1.5vw,21px);line-height:1.25;text-transform:uppercase;letter-spacing:.01em}
+.row .rn,.row .ry{font:.62em/1 var(--mono);letter-spacing:0;font-variant-numeric:tabular-nums}
+.row .ry{text-align:right}
+.row .rt span{padding:0 .18em;margin-left:-.18em}
+.row .rs{color:var(--cmute);text-transform:none;font-size:.72em;letter-spacing:0;overflow-wrap:anywhere}
+@media (hover:hover){.rows:hover .row:not(:hover){color:var(--cmute)}}
+.row:hover .rt span,.row:focus-visible .rt span{background:var(--yellow);color:#111110}
+.row:focus-visible{outline:none}
+.peek{position:fixed;left:0;top:0;z-index:70;width:250px;pointer-events:none;background:#fff;color:#111110;border:1px solid #111110;border-radius:7px;overflow:hidden;font-family:var(--sys);box-shadow:0 18px 44px -18px #11111066}
+.peek .bar{height:22px;cursor:default}
+.peek .bar b{font-size:11px}
+.peek img{display:block;width:100%;max-height:300px;object-fit:contain;background:#e8e8e3}
+
+.wsub{display:flex;justify-content:space-between;gap:16px;padding-block:6px 0;font:12px var(--sys);font-variant-numeric:tabular-nums}
+.wsub button{padding:1px 3px;margin-left:-3px}
+.wsub button:hover,.wsub button:focus-visible{background:var(--acc);color:#111110}
+.wsub div{display:flex;gap:14px}
+.case{padding-block:8vh 200px}
+.chead{max-width:1100px}
+.cnum{margin:0 0 14px;font:12px var(--mono);display:flex;align-items:center;gap:8px}
+.cnum::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--acc);border:1px solid var(--cfg)}
+.case h1{margin:0;font:400 clamp(34px,6.2vw,92px)/.98 var(--sans);letter-spacing:-.038em;text-wrap:balance;overflow-wrap:anywhere}
+.csub{margin:14px 0 0;font-size:clamp(16px,1.7vw,22px);line-height:1.3;max-width:40ch;text-wrap:balance}
+.cinfo{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,4fr);gap:32px clamp(24px,8vw,140px);margin-top:clamp(36px,7vh,80px);align-items:start}
+.ctext{min-width:0;font-size:16px;line-height:1.55;max-width:64ch}
+.ctext p{margin:0}
+.cmeta{margin:0;min-width:0;font:12px/1.5 var(--sys);display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 18px}
+.cmeta dt{color:var(--cmute)}
+.cmeta dd{margin:0;overflow-wrap:anywhere}
+.cmeta a,.blink a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.cmeta a:hover,.blink a:hover{background:var(--acc);color:#111110;text-decoration:none}
+.cmeta dd a{display:block}
+.cmedia{display:flex;flex-direction:column;gap:clamp(14px,2vw,28px);margin-top:clamp(40px,8vh,96px)}
+.cmedia img,.cmedia video{display:block;max-width:100%;height:auto;background:var(--cstage)}
+.m-full img{width:100%}
+.m-fit img,.m-fit video{width:auto;max-height:88vh}
+.m-grid{display:grid;grid-template-columns:repeat(var(--c),minmax(0,1fr));gap:clamp(8px,1.2vw,18px);align-items:start}
+.m-grid img{width:100%}
+.m-video video{width:100%;max-height:88vh;background:#000}
+.cnone{margin:0;padding:28px 0;font:12px var(--mono);color:var(--cmute);border-top:1px solid var(--cline);border-bottom:1px solid var(--cline)}
+
+.frame{margin:0;border:1px solid var(--cfg);border-radius:7px;overflow:hidden;background:var(--cbg);font-family:var(--sys)}
+.frame .bar{cursor:default;border-bottom-color:var(--cfg)}
+.frame .bar i{border-color:var(--cfg);background:none}
+.frame .bar b{left:60px;right:14px;text-align:left}
+.doc{width:100%;max-width:calc(78vh*var(--rw))}
+.doc:focus-visible{outline-offset:3px}
+.doc-stage{position:relative;aspect-ratio:var(--r);background:var(--cstage)}
+.doc-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:none}
+.doc-stage button{position:absolute;left:0;top:0;bottom:0;width:38%;cursor:w-resize}
+.doc-stage button+button{left:auto;right:0;width:62%;cursor:e-resize}
+.doc-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border-top:1px solid var(--cfg);font-size:12px;font-variant-numeric:tabular-nums}
+.doc-foot div{display:flex;align-items:center;gap:10px}
+.doc-foot button{width:30px;height:24px;border:1px solid var(--cfg);border-radius:5px;text-align:center}
+.doc-foot button:hover:not(:disabled){background:var(--cfg);color:var(--cbg)}
+.doc-foot button:disabled{opacity:.3;cursor:default}
+.blink{padding:clamp(28px,7vw,90px) clamp(16px,4vw,56px);font-size:clamp(20px,3vw,40px);letter-spacing:-.02em;line-height:1.1}
+.blink a{overflow-wrap:anywhere}
+.sk{display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:start}
+.sk canvas{display:block;width:100%;height:auto;aspect-ratio:1;background:var(--cstage);touch-action:none;cursor:crosshair}
+.sk-pick{display:flex;gap:8px;margin-top:10px}
+.sk-pick button{width:54px;height:54px;border:1px solid var(--cline);overflow:hidden}
+.sk-pick button[aria-pressed="true"]{border-color:var(--cfg);outline:1px solid var(--cfg)}
+.sk-pick img{width:100%;height:100%;object-fit:cover}
+.sk pre{margin:0;padding:14px 16px;font:12px/1.6 var(--mono);overflow-x:auto;tab-size:2}
+.cnext{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:clamp(60px,12vh,140px);padding-top:16px;border-top:1px solid var(--cline)}
+.cnext button{font-size:clamp(16px,2vw,28px);letter-spacing:-.01em;line-height:1.15;min-width:0;overflow-wrap:anywhere}
+.cnext button small{display:block;margin-bottom:6px;font:11px var(--mono);letter-spacing:0;color:var(--cmute)}
+.cnext button:last-child{text-align:right}
+.cnext button:hover span,.cnext button:focus-visible span{background:var(--acc);color:#111110}
+@media (max-width:899px){
+  .row{grid-template-columns:2.6em minmax(0,1fr) 4.6em;column-gap:10px}
+  .row .rs{display:none}
+  .cinfo{grid-template-columns:minmax(0,1fr)}
+  .m-grid{grid-template-columns:repeat(min(var(--c),2),minmax(0,1fr))}
+  .sk{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:519px){.m-grid[data-solo]{grid-template-columns:minmax(0,1fr)}}
+
+/* ───────── narrow screens ───────── */
+@media (max-width:819px){
+  .desk{display:flex;flex-direction:column;gap:0;padding-bottom:150px}
+  .meta{text-align:left;margin-top:14px}
+  .meta span{display:inline}
+  .meta span+span::before{content:" · "}
+  .me{order:3;align-self:center;height:auto;width:78%;margin:44px 0 0}
+  .hand{left:19%;top:95%;font-size:24px}
+  .nav{order:4;align-self:flex-start;flex-direction:row;flex-wrap:wrap;gap:6px 18px;margin:56px 0 0}
+  .who{order:5;align-self:flex-start;margin-top:64px;font-size:clamp(40px,13.4vw,96px)}
+  .files{order:6;flex-direction:row;flex-wrap:wrap;align-self:flex-start;align-items:flex-start;gap:16px 4px;margin:56px 0 0 -12px}
+  .file{width:104px}
+  .dot{left:calc(var(--mx)*1%);top:calc(var(--my)*1%)}
+  .dot.on{--s:132px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<main class="desk" id="desk">
+  <header class="id">
+    <b>AINOA LÓPEZ MARTÍN</b>
+    Multidisciplinary Designer<br>&amp; Creative Technologist
+  </header>
+
+  <div class="meta">
+    <span>Barcelona / BCN</span>
+    <span id="clock">--:--:--</span>
+    <span>2026</span>
+  </div>
+
+  <nav class="nav" aria-label="Sections">
+    <button type="button" data-go="work">WORK</button>
+    <button type="button" data-go="about">ABOUT</button>
+    <button type="button" data-go="playground">PLAYGROUND</button>
+    <button type="button" data-go="contact">CONTACT</button>
+  </nav>
+
+  <figure class="me" id="me">
+    <img src="a/ainoa.jpg" width="1232" height="1400" alt="Black and white studio portrait of Ainoa López, smiling, long wavy hair, open white shirt over a black top." draggable="false">
+    <p class="hand" aria-hidden="true">↖&nbsp;touch the dots</p>
+    <!-- dots are added by script from DOTS -->
+  </figure>
+
+  <button type="button" class="who" id="who" aria-label="Who is she? Open the next clue.">WHO IS SHE?<i class="caret" aria-hidden="true"></i></button>
+
+  <ul class="files" aria-label="Files on the desktop">
+    <li><button type="button" class="file" data-go="note"><i aria-hidden="true"></i><span>who_is_ainoa.txt</span></button></li>
+    <li><button type="button" class="file" data-go="help"><i aria-hidden="true"></i><span>HELP!.rtf</span></button></li>
+    <li><button type="button" class="file" data-go="rename"><i aria-hidden="true"></i><span id="jobfile">GRAPHIC DESIGNER</span></button></li>
+  </ul>
+</main>
+
+<section class="work" id="work" hidden aria-label="Work">
+  <div class="wbar">
+    <button type="button" data-home>AINOA LÓPEZ MARTÍN</button>
+    <nav aria-label="Sections">
+      <button type="button" data-go="work" aria-current="page">WORK</button>
+      <button type="button" data-go="about">ABOUT</button>
+      <button type="button" data-go="playground">PLAYGROUND</button>
+      <button type="button" data-go="contact">CONTACT</button>
+    </nav>
+  </div>
+  <div class="widx" id="widx">
+    <h1>WORK <span id="wcount"></span></h1>
+    <ol class="rows" id="rows"></ol>
+  </div>
+  <div id="wcase" lang="es" hidden></div>
+</section>
+<div class="peek" id="peek" hidden aria-hidden="true"><div class="bar"><b id="peekname"></b></div><img id="peekimg" alt=""></div>
+
+<section class="fm" id="fm" aria-label="AINOA.FM player">
+  <div class="bar"><b>AINOA.FM</b></div>
+  <div class="fm-main">
+    <button type="button" class="fm-play" id="fmplay" aria-label="Play" disabled>
+      <svg class="pl" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1v10l8.5-5z"/></svg>
+      <svg class="pa" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg>
+    </button>
+    <a class="fm-play" id="fmlink" href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener" aria-label="Open the playlist in Spotify" hidden>↗</a>
+    <div class="fm-t">
+      <div class="fm-k"><span id="fmstate">CONNECTING</span><span id="fmtime"></span></div>
+      <div class="fm-n" id="fmname">ainoa's playlist</div>
+    </div>
+  </div>
+  <div class="fm-list" id="fmlist"><div id="fmembed"></div></div>
+  <div class="fm-foot">
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <button type="button" id="fmpick" aria-expanded="false" aria-controls="fmlist">CHOOSE A SONG</button>
+    <a href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener">SPOTIFY ↗</a>
+  </div>
+</section>
+
+<div id="wins"></div>
+
+<script>
+/* ✏️ CONTENT — real material only. Dots with img:null are waiting for a photo. */
+const EMAIL='itsaenou@gmail.com';
+const DOTS=[
+ {n:'01',file:'lineapelle_milano_2026.jpg',pid:'lineapelle',img:null,x:-40,y:20,mx:14,my:7,
+  cap:'<b>Lineapelle Milano 2026</b> — stand design. The photos are not on this computer yet.'},
+ {n:'02',file:'gnubemail_glove.jpg',pid:'gnubemail',img:'a/gnubemail_glove.jpg',p:'20% 50%',tint:'blue',x:47,y:67,mx:47,my:67,
+  alt:'A hand in a black glove with a small blue circuit board on the wrist, resting on a laptop keyboard.',
+  cap:'<b>Gnubemail</b> — a glove that turns digital overload into a pause. It doesn’t notify. It doesn’t warn. It interrupts.'},
+ {n:'03',file:'rubi_100_notebook.jpg',pid:'merch',img:'a/rubi_100_notebook.jpg',p:'46% 50%',tint:'red',x:121,y:11,mx:86,my:5,
+  alt:'Two hands holding a red notebook printed with a grid of white zipper pulls.',
+  cap:'<b>Rubí Zippers</b> — centenary notebook, 1926–2026, with a collection of zipper pulls.'},
+ {n:'04',file:'on_set.jpg',pid:'polurbano',img:'a/on_set.jpg',w:340,p:'50% 44%',x:88,y:80,mx:82,my:83,
+  alt:'The back of a camera on set, its screen showing a figure posing against a red and orange backdrop.',
+  cap:'<b>Photography</b> — on set, shooting the artist @pol.urbano.'},
+ {n:'05',file:'vr_with_rexin.jpg',img:'a/vr_with_rexin.jpg',w:340,p:'50% 22%',x:27,y:34,mx:27,my:34,
+  alt:'Ainoa López and Rexin Ye standing side by side, both wearing VR headsets.',
+  cap:'<b>Personal</b> — with Rexin Ye, in VR.'},
+ {n:'06',file:'groc_controller.jpg',pid:'groc',img:'a/groc_controller.jpg',w:340,p:'50% 56%',tint:'yellow',x:-19,y:86,mx:13,my:92,
+  alt:'A glowing yellow sphere in a dark red room.',
+  cap:'<b>GROC</b> — a game and a controller to understand anxiety. Made with Rexin Ye.'},
+ {n:'07',file:'anemoia.jpg',pid:'anemoia',img:'a/anemoia.jpg',p:'40% 55%',x:136,y:57,mx:88,my:50,
+  alt:'White sheets on a washing line at sunrise in front of a house.',
+  cap:'<b>Anemoia</b> — AI visuals for a nostalgia you never lived.'}
+];
+const BOOTH=[
+ {src:'a/ainoa_full.jpg',name:'ainoa.jpg',alt:'Black and white studio portrait of Ainoa, standing, smiling.'},
+ {src:'a/estudio.jpg',name:'estudio.jpg',alt:'Black and white studio portrait of Ainoa sitting on the floor, arms resting on her knees, looking at the camera.'},
+ {src:'a/mirador.jpg',name:'mirador.jpg',alt:'Ainoa at a viewpoint at sunset, holding up her phone to take a photo, with people and trees behind her.'},
+ {src:'a/ascensor.jpg',name:'ascensor.jpg',alt:'Mirror selfie in a lift: Ainoa shouting happily with one hand in the air and a pink phone in the other.'},
+ {src:'a/estadio.jpg',name:'estadio.jpg',alt:'Ainoa in a stadium stand, winking while eating popcorn from a red and white striped box.'},
+ {src:'a/tulipanes.jpg',name:'tulipanes.jpg',alt:'Selfie of Ainoa in front of a wall of instant photos of red tulips.'},
+ {src:'a/con_amiga.jpg',name:'con_amiga.jpg',alt:'Black and white studio photo of Ainoa and a friend hugging.'},
+ {src:'a/noche_analogica.jpg',name:'noche_analogica.jpg',alt:'Film photo at night: three friends huddled together in front of a building covered in Christmas lights.'},
+ {src:'a/vr_with_rexin.jpg',name:'vr_with_rexin.jpg',alt:'Ainoa López and Rexin Ye wearing VR headsets.'},
+ {src:'a/carnet.jpg',name:'carnet.jpg',alt:'A small ID photo of Ainoa as a toddler, lying on a wooden table.'},
+ {src:'a/aenou.jpg',name:'aenou.jpg',alt:'The same toddler photo with AENOU handwritten across it in orange.'},
+ {src:'a/pintando.jpg',name:'pintando.jpg',alt:'Ainoa as a small child with curly hair and blue paint on her hands, sitting at a table covered in paintings.'}
+];
+const ROLES=['DESIGNER','CREATIVE TECHNOLOGIST','INTERACTIVE DESIGNER','ART DIRECTOR','CREATIVE PRODUCER','PROJECT MANAGER','PROBLEM SOLVER'];
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const root=document.documentElement, wins=$('#wins');
+const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* clock — Barcelona time, wherever the visitor is */
+const fmt=new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit',timeZone:'Europe/Madrid'});
+const tick=()=>{$('#clock').textContent=fmt.format(new Date())};tick();setInterval(tick,1000);
+
+/* ───────── windows ───────── */
+let z=100,opened=0;
+const front=el=>{el.style.zIndex=++z};
+function place(el,L,T){const r=el.getBoundingClientRect();
+  el.style.left=Math.round(Math.max(8,Math.min(L,innerWidth-r.width-8)))+'px';
+  el.style.top=Math.round(Math.max(8,Math.min(T,innerHeight-r.height-8)))+'px'}
+function closeWin(el){if(!el)return;if(el.id==='w-gate'){const s=$('#scrim');if(s)s.remove()}el.remove()}
+function win({id,title='',cls='',html,w=360,x=.5,y=.42}){
+  let el=document.getElementById(id);if(el){front(el);return el}
+  el=document.createElement('section');el.id=id;el.className='win '+cls;el.setAttribute('role','dialog');el.setAttribute('aria-label',title||'Message');
+  el.innerHTML=`<header class="bar"><button type="button" class="x" aria-label="Close ${esc(title)}"></button><i></i><i></i><b>${esc(title)}</b></header><div class="body">${html}</div>`;
+  wins.appendChild(el);
+  const narrow=innerWidth<820,ww=Math.min(w,innerWidth-32);el.style.width=ww+'px';
+  const r=el.getBoundingClientRect(),k=opened++%5;
+  place(el,narrow?(innerWidth-ww)/2:x*innerWidth-ww/2+k*10,narrow?52+k*18:y*innerHeight-r.height/2+k*10);
+  front(el);
+  $('.x',el).onclick=()=>closeWin(el);
+  el.addEventListener('pointerdown',()=>front(el));
+  const bar=$('.bar',el);let on=0,ox,oy;
+  bar.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;on=1;ox=e.clientX-el.offsetLeft;oy=e.clientY-el.offsetTop;bar.setPointerCapture(e.pointerId)});
+  bar.addEventListener('pointermove',e=>{if(on)place(el,e.clientX-ox,e.clientY-oy)});
+  bar.addEventListener('pointerup',()=>on=0);bar.addEventListener('pointercancel',()=>on=0);
+  return el;
+}
+function alertWin({id,mark='!',title,text,buttons,w=330,x=.5,y=.4}){
+  const fresh=!document.getElementById(id);
+  const el=win({id,title,cls:'alert',w,x,y,html:`<div class="ic" aria-hidden="true">${mark}</div><div><h2>${title}</h2><p>${text}</p></div><div class="row">${buttons.map((b,i)=>`<button type="button" class="btn${b.pri?' pri':''}" data-b="${i}">${b.label}</button>`).join('')}</div>`});
+  if(fresh){$$('[data-b]',el).forEach(b=>b.onclick=()=>{const f=buttons[+b.dataset.b].act;if(!f||f(b,el)!==false)closeWin(el)});
+    ($('.pri',el)||$('.btn',el)).focus({preventScroll:true})}
+  return el;
+}
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;const top=$$('.win').sort((a,b)=>b.style.zIndex-a.style.zIndex)[0];if(top)closeWin(top);else if(!work.hidden)go(wcase.hidden?'':'work')});
+
+/* ───────── the things you can open ───────── */
+const OPEN={
+ work:()=>alertWin({id:'w-work',title:'“WORK” is still empty.',text:'Version B starts with the home. The project index comes next.',buttons:[{label:'OK',pri:1}]}),
+ playground:()=>alertWin({id:'w-play',title:'“PLAYGROUND” is still empty.',text:'A folder full of things goes here. Not built yet.',buttons:[{label:'OK',pri:1}]}),
+ contact:()=>alertWin({id:'w-contact',mark:'@',w:350,title:'Say hello.',
+   text:`<span class="sel" id="mail">${EMAIL}</span><br><a href="https://instagram.com/aenou_" target="_blank" rel="noopener">Instagram @aenou_</a><br><a href="https://www.linkedin.com/in/wavingyourmind" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://www.behance.net/wavingmind" target="_blank" rel="noopener">Behance</a>`,
+   buttons:[{label:'CLOSE'},{label:'COPY EMAIL',pri:1,act:b=>{const ok=()=>{b.textContent='COPIED'};
+     const sel=()=>{const r=document.createRange();r.selectNodeContents($('#mail'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='SELECTED'};
+     try{navigator.clipboard.writeText(EMAIL).then(ok,sel)}catch(_){sel()}return false}}]}),
+ about:()=>OPEN.booth(),
+ booth:()=>{
+   const fresh=!document.getElementById('w-booth');
+   const el=win({id:'w-booth',title:'Photo Booth',cls:'pb',w:400,x:.3,y:.42,html:`<div class="pb-view"><img id="pbimg" src="${BOOTH[0].src}" alt="${esc(BOOTH[0].alt)}"><div class="pb-flash" id="pbflash"></div></div>
+     <div class="pb-bar"><span id="pbname">${BOOTH[0].name}</span><button type="button" class="pb-shot" id="pbshot" aria-label="Next photo"></button><span id="pbcount">1 / ${BOOTH.length}</span></div>
+     <div class="pb-tray">${BOOTH.map((p,i)=>`<button type="button" data-i="${i}" aria-label="Show ${p.name}"><img src="${p.src}" alt=""></button>`).join('')}</div>`});
+   if(!fresh)return el;let i=0;
+   const show=(k,flash)=>{i=(k+BOOTH.length)%BOOTH.length;const p=BOOTH[i];$('#pbimg',el).src=p.src;const cb=$$('.pb-tray button',el)[i];if(cb&&cb.scrollIntoView)cb.scrollIntoView({block:'nearest',inline:'nearest'});$('#pbimg',el).alt=p.alt;$('#pbname',el).textContent=p.name;$('#pbcount',el).textContent=(i+1)+' / '+BOOTH.length;
+     $$('.pb-tray button',el).forEach((b,j)=>b.setAttribute('aria-current',j===i));
+     if(flash){const f=$('#pbflash',el);f.classList.remove('go');void f.offsetWidth;f.classList.add('go')}};
+   show(0);$('#pbshot',el).onclick=()=>show(i+1,true);$$('.pb-tray button',el).forEach(b=>b.onclick=()=>show(+b.dataset.i));
+   return el},
+ note:()=>win({id:'w-note',title:'who_is_ainoa.txt',cls:'txt',w:430,x:.62,y:.36,html:`<p>Ainoa López Martín. Born in 2002, from Rubí.<br>Graphic designer at Rubí Zippers for a year now.<br>Studying Design and Innovation at ELISAVA.</p>
+   <p>Super extroverted, with zero sense of shame.<br>Fan of memes and basketball.<br>Loves travel, music, exhibitions and baking.</p>
+   <p>DESIGNER<br>TECHNOLOGIST<br>SOMETIMES PRODUCER<br>SOMETIMES ART DIRECTOR<br>USUALLY DOING SEVERAL THINGS AT ONCE.</p>`}),
+ help:()=>{
+   const fresh=!document.getElementById('w-help');
+   const el=win({id:'w-help',title:'HELP!.rtf',cls:'help',w:400,x:.5,y:.46,html:`<h2>HELP!</h2><p>I AM A</p><ul class="roles" id="roles"></ul><p>TRAPPED INSIDE THE BODY<br>OF A GRAPHIC DESIGNER.</p>
+     <footer><span>Drag to reorder. Double-click to rename.<br>× deletes. The blank line is yours.</span><button type="button" class="btn" id="revert">REVERT</button></footer>`});
+   if(fresh)helpInit(el);return el},
+ rename:()=>{
+   const fresh=!document.getElementById('w-rename');const cur=$('#jobfile').textContent;
+   const el=win({id:'w-rename',title:'Rename',cls:'rn',w:330,x:.72,y:.5,html:`<form id="rnform"><label for="rninput">Rename file:</label><span class="old">${esc(cur)}</span><span class="arrow" aria-hidden="true">↓</span>
+     <input id="rninput" type="text" autocomplete="off" spellcheck="false" maxlength="40" value=""><div class="row"><button type="button" class="btn" id="rncancel">CANCEL</button><button type="submit" class="btn pri">SAVE</button></div></form>`});
+   if(!fresh)return el;
+   const inp=$('#rninput',el),target=cur==='GRAPHIC DESIGNER'?'MULTIDISCIPLINARY DESIGNER':cur;let t,k=0,typing=!calm;
+   const stop=()=>{if(typing)inp.value=target;typing=false;clearTimeout(t)};
+   if(calm)inp.value=target;else (function type(){if(!typing||!inp.isConnected)return;inp.value=target.slice(0,++k);if(k<target.length)t=setTimeout(type,55);else typing=false})();
+   inp.addEventListener('keydown',stop);inp.addEventListener('pointerdown',stop);inp.focus({preventScroll:true});
+   $('#rncancel',el).onclick=()=>{stop();closeWin(el)};
+   $('#rnform',el).addEventListener('submit',e=>{e.preventDefault();stop();const v=(inp.value.trim()||target).toUpperCase();$('#jobfile').textContent=v;closeWin(el)});
+   return el}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&OPEN[b.dataset.go])OPEN[b.dataset.go]()});
+
+/* WHO IS SHE? — each click opens the next clue */
+const CLUES=['booth','note','help','rename'];let clue=0;
+$('#who').addEventListener('click',()=>{OPEN[CLUES[clue++%CLUES.length]]()});
+
+/* ───────── HELP! — drag, delete, rename, type your own ───────── */
+function helpInit(el){
+  const ul=$('#roles',el);
+  const li=t=>{const n=document.createElement('li');n.className='role';
+    n.innerHTML=`<span class="t" tabindex="0">${esc(t)}</span><span class="sl" aria-hidden="true">/</span><button type="button" class="del" aria-label="Delete ${esc(t)}">×</button>`;return n};
+  const build=()=>{ul.innerHTML='';ROLES.forEach(t=>ul.appendChild(li(t)));
+    const b=document.createElement('li');b.className='blank';b.innerHTML='<input id="ownrole" type="text" maxlength="32" autocomplete="off" spellcheck="false" placeholder="type your own" aria-label="Type your own word">';ul.appendChild(b)};
+  build();$('#revert',el).onclick=build;
+  const edit=t=>{t.contentEditable='true';t.focus();getSelection().selectAllChildren(t)};
+  const commit=t=>{t.contentEditable='false';const v=t.textContent.trim().toUpperCase();if(!v)t.closest('li').remove();else{t.textContent=v;$('.del',t.closest('li')).setAttribute('aria-label','Delete '+v)}};
+  ul.addEventListener('click',e=>{const d=e.target.closest('.del');if(d)d.closest('li').remove()});
+  ul.addEventListener('dblclick',e=>{const t=e.target.closest('.t');if(t)edit(t)});
+  ul.addEventListener('focusout',e=>{if(e.target.matches&&e.target.matches('.t[contenteditable="true"]'))commit(e.target)});
+  ul.addEventListener('keydown',e=>{const t=e.target;
+    if(t.id==='ownrole'){if(e.key==='Enter'&&t.value.trim()){ul.insertBefore(li(t.value.trim().toUpperCase()),t.closest('li'));t.value=''}return}
+    if(!t.matches('.t'))return;const row=t.closest('li');
+    if(t.isContentEditable){if(e.key==='Enter'){e.preventDefault();t.blur()}e.stopPropagation();return}
+    if(e.key==='Enter'){e.preventDefault();edit(t)}
+    else if(e.key==='Backspace'||e.key==='Delete'){const nx=row.nextElementSibling;row.remove();const f=nx&&$('.t,input',nx);if(f)f.focus()}
+    else if(e.key==='ArrowUp'&&row.previousElementSibling){ul.insertBefore(row,row.previousElementSibling);t.focus()}
+    else if(e.key==='ArrowDown'&&row.nextElementSibling&&row.nextElementSibling.classList.contains('role')){ul.insertBefore(row.nextElementSibling,row);t.focus()}});
+  let drag=null,sy=0;
+  ul.addEventListener('pointerdown',e=>{const t=e.target.closest('.t');if(!t||t.isContentEditable)return;drag=t.closest('li');sy=e.clientY;t.setPointerCapture(e.pointerId)});
+  ul.addEventListener('pointermove',e=>{if(!drag)return;if(Math.abs(e.clientY-sy)<5&&!drag.classList.contains('moving'))return;drag.classList.add('moving');
+    const others=$$('li',ul).filter(n=>n!==drag);const before=others.find(n=>{const r=n.getBoundingClientRect();return e.clientY<r.top+r.height/2})||$('.blank',ul);
+    if(before!==drag.nextElementSibling)ul.insertBefore(drag,before)});
+  const end=()=>{if(drag){drag.classList.remove('moving');drag=null}};
+  ul.addEventListener('pointerup',end);ul.addEventListener('pointercancel',end);
+}
+
+/* ───────── dots: hover, click, drag ───────── */
+const me=$('#me');
+const hideDots=()=>{$$('.dot.on').forEach(d=>d.classList.remove('on'));delete root.dataset.tint};
+function showDot(el,d){$$('.dot.on').forEach(o=>{if(o!==el)o.classList.remove('on')});el.classList.add('on');if(d.tint)root.dataset.tint=d.tint;else delete root.dataset.tint}
+function openDot(d){
+  if(!d.img)return alertWin({id:'w-missing',mark:'?',title:`“${d.file}” can’t be found.`,text:'The Lineapelle stand photos are not on this computer yet.',buttons:[{label:'OPEN PROJECT',act:()=>{go('p-lineapelle');return false}},{label:'OK',pri:1}]});
+  win({id:'w-pv-'+d.n,title:d.file,cls:'pv',w:d.w||500,x:.5,y:.45,html:`<img src="${d.img}" alt="${esc(d.alt)}"><p>${d.cap}${d.pid?`<button type="button" class="btn" data-p="${d.pid}">OPEN PROJECT</button>`:''}</p>`});
+}
+DOTS.forEach(d=>{
+  const el=document.createElement('button');el.type='button';el.className='dot';
+  el.style.setProperty('--x',d.x);el.style.setProperty('--y',d.y);el.style.setProperty('--mx',d.mx);el.style.setProperty('--my',d.my);if(d.p)el.style.setProperty('--p',d.p);
+  el.setAttribute('aria-label',`Dot ${d.n}: ${d.file}`);
+  el.innerHTML=(d.img?`<img src="${d.img}" alt="" draggable="false">`:`<span class="nf" aria-hidden="true">?</span>`)+`<span class="lb">${d.n}<em>&nbsp;&nbsp;${d.file}</em></span>`;
+  me.appendChild(el);
+  let down=null,moved=false,wasOn=false;
+  el.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!down)showDot(el,d)});
+  el.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!down&&!el.matches(':focus-visible')){el.classList.remove('on');delete root.dataset.tint}});
+  el.addEventListener('focus',()=>{if(el.matches(':focus-visible'))showDot(el,d)});
+  el.addEventListener('blur',()=>{if(!el.matches(':hover')){el.classList.remove('on');if(!$('.dot.on'))delete root.dataset.tint}});
+  el.addEventListener('pointerdown',e=>{wasOn=el.classList.contains('on');down={x:e.clientX,y:e.clientY,l:el.offsetLeft,t:el.offsetTop,w:el.offsetWidth};moved=false;el.setPointerCapture(e.pointerId)});
+  el.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;if(!moved&&Math.hypot(dx,dy)<6)return;
+    if(!moved){moved=true;el.classList.add('drag');showDot(el,d)}
+    el.style.left=(down.l+down.w/2+dx)+'px';el.style.top=(down.t+down.w/2+dy)+'px'});
+  const up=e=>{if(!down)return;down=null;el.classList.remove('drag');
+    if(moved||e.type==='pointercancel')return;
+    if(e.pointerType==='mouse'||wasOn)openDot(d);else showDot(el,d)};
+  el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  el.addEventListener('click',e=>{if(e.detail===0)openDot(d)});
+});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.dot'))hideDots()});
+
+/* ───────── AINOA.FM — Ainoa's Spotify playlist inside our own window ─────────
+   Spotify only plays through its own embed, so the list of songs (choose one, skip) is Spotify's,
+   shown inside this window; our button drives play / pause. Where the embed is not allowed to load
+   (previews that block other sites) the player falls back to a plain link to the playlist. */
+const PLAYLIST='1vwP2i7MblzSlrk4iXS9m0';
+const fm=$('#fm');let sp=null,spState='loading',playing=false,wantPlay=false;
+const mmss=ms=>{const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+function fmUI(pos,dur){fm.classList.toggle('playing',playing);
+  $('#fmplay').setAttribute('aria-label',playing?'Pause':'Play');
+  $('#fmstate').textContent=spState==='loading'?'CONNECTING':spState==='off'?'SPOTIFY':playing?'NOW PLAYING':'PAUSED';
+  if(pos!=null)$('#fmtime').textContent=mmss(pos)+(dur?' / '+mmss(dur):'')}
+function fmOpen(v){fm.classList.toggle('open',v);$('#fmpick').setAttribute('aria-expanded',v);$('#fmpick').textContent=v?'HIDE THE LIST':'CHOOSE A SONG'}
+function fmOff(){if(spState==='ready')return;spState='off';playing=false;fmOpen(false);
+  $('#fmplay').hidden=true;$('#fmlink').hidden=false;$('#fmpick').hidden=true;$('#fmname').textContent='opens in Spotify, new tab';$('#fmtime').textContent='';fmUI()}
+function fmOn(){spState='ready';$('#fmplay').hidden=false;$('#fmplay').disabled=false;$('#fmlink').hidden=true;$('#fmpick').hidden=false;$('#fmname').textContent="ainoa's playlist";fmUI();
+  if(wantPlay){wantPlay=false;try{sp.play()}catch(_){}}}
+function play(){if(spState==='ready'){if(!playing)try{sp.play()}catch(_){}}else if(spState==='loading')wantPlay=true;else $('#fmlink').focus()}
+$('#fmplay').addEventListener('click',()=>{if(sp)try{sp.togglePlay()}catch(_){}});
+$('#fmpick').addEventListener('click',()=>fmOpen(!fm.classList.contains('open')));
+window.onSpotifyIframeApiReady=api=>{try{api.createController($('#fmembed'),{uri:'spotify:playlist:'+PLAYLIST,width:'100%',height:352},c=>{sp=c;
+  c.addListener('ready',fmOn);
+  c.addListener('playback_update',e=>{const d=(e&&e.data)||{};if(spState!=='ready')fmOn();playing=!d.isPaused;fmUI(d.position,d.duration)})})}catch(_){fmOff()}};
+(function(){const t=document.createElement('script');t.src='https://open.spotify.com/embed/iframe-api/v1';t.async=true;t.onerror=fmOff;document.head.appendChild(t);
+  setTimeout(()=>{if(spState==='loading')fmOff()},9000)})();
+fmUI();
+
+/* ───────── WORK — the 23 projects, texts exactly as supplied (Spanish) ───────── */
+const IMG=n=>'p/img/'+n+'.jpg';
+/* natural sizes, so nothing jumps while images load */
+const DIM={'afl10-a':[1754,1754],'afl10-b':[1754,1754],'afl12':[1013,1800],'bolsa-1':[1600,1600],'bolsa-2':[1800,1800],'ensporten-ig':[1431,1583],'ensporten-info':[1278,1800],'goodnews':[1286,1800],'gravem-making':[1012,1800],'gravem-set':[1800,1013],'gravem-set2':[1800,1013],'libreta':[1800,1201],'merch-1':[919,654],'merch-2':[990,781],'picapica':[1273,1800],'picapica2':[1273,1800],'polurbano-set':[1200,1600],'santjoan':[1350,1800],'shopper-1':[1800,1356],'shopper-2':[1800,1356],'groc-1':[579,819],'groc-2':[579,819],'groc-3':[820,580],'groc-4':[579,819],'groc-5':[579,819],'groc-6':[579,819],'gnubemail-glove':[2000,695],'emo-33':[1600,1132]};
+for(let i=8;i<=15;i++)DIM['anemoia-'+String(i).padStart(2,'0')]=[1024,1024];
+const an=(a,b)=>Array.from({length:b-a+1},(_,i)=>'anemoia-'+String(a+i).padStart(2,'0'));
+const PROJ=[
+ {id:'groc',n:'GROC',y:'ELISAVA',th:1,tone:'dark',acc:'#ffe500',
+  s:'Un videojuego y una controladora para entender la ansiedad',
+  tags:'Branding · Diseño gráfico · Diseño interactivo · Creative Technology · 3D & prototipado · Fotografía & audiovisual',
+  d:'GROC es una herramienta de apoyo emocional en forma de videojuego narrativo. Un laberinto de píxeles representa la ansiedad y las estrellas que recoges simbolizan estrategias de afrontamiento, como la respiración consciente. Se juega con una controladora física: una esfera luminosa con giroscopio y matriz LED, conectada con Arduino y Unity.',
+  w:'Proyecto de ELISAVA, con Rexin Ye. Mi parte: branding, diseño gráfico y editorial; creamos juntos el videojuego en Unity y la web, el tráiler en After Effects y la controladora alternativa con Arduino y giroscopio.',
+  links:[['https://www.instagram.com/reel/DKK6x3BMU4-/','Ver el reel en Instagram']],
+  media:[{t:'grid',c:3,im:['groc-1','groc-2','groc-4']},{t:'grid',c:3,im:['groc-5','groc-6','groc-3']},{t:'doc',f:'groc',n:53,r:'1600/1132',label:'Memoria completa'}]},
+ {id:'gnubemail',n:'Gnubemail',y:'2025',th:1,acc:'#9cc4ff',
+  s:'Un guante que convierte la sobrecarga digital en una pausa',
+  tags:'3D & prototipado · Diseño interactivo · Diseño gráfico',
+  d:'¿Puede la hibernación ser una nueva forma de desconectar del trabajo digital sin sentirse culpable? Gnubemail es un guante que mide el estrés digital a través de los correos sin leer de Gmail y crea una pausa física: no avisa, no notifica, interrumpe. Funciona con Google Apps Script, un ESP32 con WiFi y un servomotor. Un proyecto crítico con la ideología de la eficiencia y la productividad.',
+  media:[{t:'full',im:['gnubemail-glove']},{t:'doc',f:'gnu',n:22,r:'1600/1039',label:'Proyecto completo'},{t:'doc',f:'gnut',n:16,r:'1600/1039',label:'Explicación técnica'}]},
+ {id:'telegrafo',n:'Telégrafo Óptico',y:'2025',th:1,acc:'#c9f04f',
+  s:'Proyecto de investigación · Teorías críticas, ELISAVA',
+  tags:'3D & prototipado · Diseño gráfico',
+  d:'Proyecto de investigación: ¿puede un sistema de telégrafos ópticos transmitir “mama nem a sopar” entre Montserrat y Montjuïc, entre las 9h y las 21h, de forma 100% analógica? Caminando se tardan 12–14 horas; con una línea visual continua de torres históricas (Can Dolcet, Esparreguera, Castellbisbal, Sant Pere Màrtir y el Castell de Montjuïc) el mensaje llega en 2–4 minutos. Estudiamos el emisor y la codificación, la red de retransmisores, la hipótesis de decodificación y el tiempo total de envío, y lo convertimos en una gincana en la que cada grupo es una torre y retransmite con el cuerpo la postura-símbolo recibida. Haz clic en una imagen para ver todo el proceso.',
+  w:'Con Marta Alcázar, Blanca González, Laura Ibáñez y Rexin Ye · Teorías críticas, grupo 3, curso 2025-26',
+  media:[{t:'doc',f:'tel',n:22,r:'16/9',label:'Proyecto completo'}]},
+ {id:'anemoia',n:'Anemoia',y:'2026',th:1,
+  s:'Creación con IA · instalaciones sensoriales',
+  tags:'Branding · Diseño gráfico',
+  d:'Anemoia: la nostalgia por un tiempo, lugar o época que nunca se ha vivido. Un proyecto de visuales generativos con IA que traduce esa emoción compleja a los cinco sentidos (ver, oír, oler, tocar y saborear) como instalaciones imaginadas, cada una con su concepto y su prompt.',
+  w:'Con Mariana, Camila, Pol y Jan',
+  media:[{t:'full',im:['anemoia-01']},{t:'grid',c:2,im:an(2,7)},{t:'grid',c:4,im:an(8,15)}]},
+ {id:'afl',n:'AFL · Estudio Bengala',y:'2023',th:1,tone:'dark',acc:'#3aa0ff',
+  s:'Carteles para la liga AFL',
+  tags:'Diseño gráfico · Dirección de arte',
+  d:'Carteles de combate y cartel de evento para la AFL (Ansgar Fighting League, Prospect Series) en Barcelona: AFL 10 (22.04.23) y AFL 12 (01.07.23). Trabajo realizado con Estudio Bengala.',
+  media:[{t:'grid',c:2,im:['afl10-a','afl10-b']},{t:'fit',im:['afl12']}]},
+ {id:'fauces',n:'Fauces · Manual de marca',y:'2023',th:1,
+  s:'Identidad y manual de marca',
+  tags:'Diseño gráfico · Creative Technology',
+  d:'Manual de normas y usos de la marca gráfica: perfil, origen y construcción del logotipo, versiones, tipografías, cromatismo, recursos, layout y aplicaciones (35 páginas).',
+  media:[{t:'doc',f:'fau',n:35,r:'1600/1132',label:'Manual de marca'}]},
+ {id:'ipsom',n:'Ipsom · Presentación',y:'2023',th:1,acc:'#b5cc18',
+  s:'Presentación de gestión de ayudas',
+  tags:'Diseño gráfico · Fotografía & audiovisual',
+  d:'Presentación corporativa de Ipsom, consultoría especializada en gestión de ayudas y subvenciones: quiénes son, alcance del servicio y cómo trabajan (11 páginas).',
+  media:[{t:'doc',f:'ips',n:11,r:'1600/1132',label:'Proyecto completo'}]},
+ {id:'ensporten',n:'Ensporten',y:'2022',th:1,tone:'dark',acc:'#3fe0a0',
+  s:'App de reparto 100% sostenible',
+  tags:'Diseño UX/UI · Diseño interactivo · Diseño gráfico · 3D & prototipado',
+  d:'Ensporten es una app de paquetería ecológica instantánea para el comercio local: ayuda al pequeño comercio a competir con las grandes superficies. Proyecto del CFGS de Interactiva 2022 (EAD Sant Cugat): identidad de marca, manual, diseño de la app, animaciones y prototipo con Adobe Illustrator, After Effects y Figma.',
+  links:[['https://www.figma.com/design/JSFEu5zvDz93GzcIJvU0r6/Untitled?node-id=2-123&t=pxMdp7MQM858koJt-1','Abrir el prototipo en Figma']],
+  media:[{t:'grid',c:2,im:['ensporten-info','ensporten-ig']},{t:'doc',f:'ensp',n:24,r:'1600/1132',label:'Manual de marca'}]},
+ {id:'emotion',n:'Emotion',y:'2023',th:1,acc:'#ff7a3c',
+  s:'Identidad para un centro de arteterapia y musicoterapia',
+  tags:'Diseño gráfico · Creative Technology',
+  d:'Emotion es un centro de arteterapia y musicoterapia en Sant Cugat del Vallès. Proyecto integrado de 2º de Gráfica Impresa (EAD Sant Cugat, 2022-2023): investigación, naming, logotipo e isotipo, colores y tipografías corporativas, elementos gráficos, campaña y merchandising.',
+  media:[{t:'full',src:['p/emo/p-33.jpg'],dim:[1600,1132]},{t:'doc',f:'emo',n:33,r:'1600/1132',label:'Proyecto completo'},{t:'doc',f:'emom',n:24,r:'1600/1132',label:'Manual de marca'}]},
+ {id:'goodnews',n:'Good News · Revista',y:'2022',th:1,
+  s:'Diseño editorial',tags:'Diseño gráfico',
+  media:[{t:'fit',im:['goodnews']}]},
+ {id:'polurbano',n:'Pol Urbano · Fotografía',y:'2026',th:1,acc:'#ff5a2a',
+  s:'Sesión de fotos para el artista @pol.urbano',
+  tags:'Fotografía & audiovisual',
+  d:'Sesión de fotografía para el artista @pol.urbano, con fondo de color rojo y naranja y dirección de la pose en plató.',
+  w:'Fotografía: Ainoa López',
+  links:[['https://www.instagram.com/p/DWblLruDdG1/','Ver en Instagram'],['https://www.instagram.com/p/DYPwa76gt_E/','Instagram · 2'],['https://www.instagram.com/p/DYnfZptgETs/','Instagram · 3']],
+  media:[{t:'fit',im:['polurbano-set']}]},
+ {id:'movimiento',n:'Imagen en movimiento',y:'2025',th:1,acc:'#7bff00',
+  s:'Animación con código · Processing',
+  tags:'Creative Technology · Diseño interactivo',
+  d:'Ejercicio de animación con código en Processing: la imagen se convierte en un mosaico de píxeles cuyo tamaño controla el ratón. El eje X cambia el ancho y el eje Y el alto de cada rectángulo, que toma el color de la imagen original. Prueba con las tres imágenes.',
+  media:[{t:'sketch'}]},
+ {id:'lineapelle',n:'Lineapelle · Stand',y:'2026',
+  s:'Diseño del stand',tags:'Diseño gráfico · Project management',
+  d:'Diseño del stand para Lineapelle: distribución del espacio, mobiliario, medidas y colores.',
+  media:[{t:'none'}]},
+ {id:'campanas',n:'Rubí Zippers · Campañas',y:'2026',th:1,acc:'#ff2a1a',
+  s:'Creación y dirección de campañas',
+  tags:'Dirección de arte · Diseño gráfico',
+  d:'Creación y dirección de campañas para Rubí Zippers, producidas junto a Gravem: concepto, dirección de arte y coordinación del rodaje en plató.',
+  w:'Con Gravem',
+  media:[{t:'video',src:'p/v/gravem-making.mp4',poster:'p/img/gravem-poster.jpg'},{t:'grid',c:2,im:['gravem-set','gravem-set2']},{t:'fit',im:['gravem-making']}]},
+ {id:'video-da',n:'Vídeo · Dirección de arte',y:'2026',kind:'YouTube',acc:'#ff2a1a',
+  s:'Dirección de arte y coordinación',
+  tags:'Dirección de arte · Diseño gráfico',
+  w:'Dirección de arte y coordinación: Ainoa López',
+  media:[{t:'link',url:'https://youtu.be/4oAllFvJhE0',label:'Ver el vídeo en YouTube'}]},
+ {id:'web',n:'Rubí Zippers · Web',y:'2026',kind:'Web',acc:'#ff2a1a',
+  s:'Sitio web corporativo',
+  tags:'Dirección de arte · Diseño UX/UI · Diseño interactivo',
+  d:'Web corporativa de Rubí Zippers, fabricante de cremalleras de Barcelona desde 1926: colecciones, cursores, sostenibilidad y recursos técnicos descargables para moda, denim, outdoor y marroquinería de lujo.',
+  w:'Con Motto Agency',
+  media:[{t:'link',url:'https://rubizippers.com/es',label:'Ver la web'}]},
+ {id:'picapica',n:'Rubí Zippers · Pica Pica',y:'2025',th:1,acc:'#ff2a1a',
+  s:'Cartel-invitación de la fiesta de Navidad',tags:'Diseño gráfico',
+  d:'Cartel-invitación del “Pica Pica” de Rubí Zippers: viernes 19 de diciembre a las 14:30h. Dos versiones: una roja con ilustraciones a línea de platos y tomates, y otra verde navideña.',
+  w:'Diseño en Rubí Zippers',
+  media:[{t:'grid',c:2,solo:1,im:['picapica','picapica2']}]},
+ {id:'santjoan',n:'Rubí Zippers · Sant Joan',y:'2026',th:1,acc:'#ff8a3c',
+  s:'Cartel de Sant Joan',tags:'Diseño gráfico',
+  d:'Cartel de la verbena de Sant Joan para Rubí Zippers: una cremallera que se abre en una chispa de petardo, con el lema “La guspira que ens uneix”.',
+  w:'Diseño en Rubí Zippers',
+  media:[{t:'fit',im:['santjoan']}]},
+ {id:'cien',n:'Rubí Zippers · 100 años',y:'2026',acc:'#ff2a1a',
+  s:'Logo del centenario',tags:'Diseño gráfico · Creative Technology',
+  w:'Diseño en Rubí Zippers',
+  media:[{t:'none'}]},
+ {id:'merch',n:'Rubí Zippers · Merchandising',y:'2026',th:1,acc:'#ff2a1a',
+  s:'Bolsas, sudaderas y libretas del centenario',tags:'Diseño gráfico',
+  d:'Merchandising para el centenario de Rubí Zippers (1926-2026): bolsas shopper (una con el “100” y otra con una ilustración de Cremalleras Relámpago que recuerda los inicios de la marca), sudaderas con el logotipo y un gran “100” en la espalda, y libretas rojas con el logotipo en relieve y una colección de tiradores de cremallera.',
+  w:'Diseño en Rubí Zippers',
+  media:[{t:'grid',c:2,im:['bolsa-1','bolsa-2']},{t:'full',im:['libreta']},{t:'grid',c:2,im:['merch-1','merch-2']},{t:'grid',c:2,im:['shopper-1','shopper-2']}]},
+ {id:'ovalo',n:'Óvalo · Manual de marca',y:'2024',kind:'Behance',
+  s:'Manual de marca',tags:'Diseño gráfico · Creative Technology',
+  media:[{t:'link',url:'https://www.behance.net/gallery/201585981/OVALO-MANUAL-DE-MARCA',label:'Ver en Behance'}]},
+ {id:'afloral',n:'A.Floral · Manual de marca',y:'2024',kind:'Behance',
+  s:'Manual de marca',tags:'Diseño gráfico · Creative Technology',
+  media:[{t:'link',url:'https://www.behance.net/gallery/201448373/AFLORAL-MANUAL-DE-MARCA',label:'Ver en Behance'}]},
+ {id:'3d',n:'3D animation',y:'2022',kind:'Behance',
+  s:'Animación 3D',tags:'3D & prototipado',
+  media:[{t:'link',url:'https://www.behance.net/gallery/143039789/3d-animation',label:'Ver en Behance'}]}
+];
+const PDE=`PImage img;
+int xstep = 15;
+int ystep = 15;
+
+void setup (){
+  frameRate (1);
+  noStroke ();
+  size (600,600);
+  img = loadImage("hua copy.jpg");
+  img.resize (width,height);
+}
+
+void draw (){
+ystep = int(map(mouseY,0,height,2,60));
+xstep = int(map(mouseX,0,width,2,60));
+image (img,0,0);
+for (int i = 0; i < width; i= i + xstep){
+   for (int j = 0; j < height; j = j + ystep){
+   color c = img.get (i,j);
+   fill (c);
+   rect (i, j, xstep, ystep);
+   }
+  }
+}`;
+
+const work=$('#work'),widx=$('#widx'),wcase=$('#wcase'),desk=$('#desk'),peek=$('#peek');
+const pad2=n=>String(n).padStart(2,'0');
+const pic=(src,w,h,alt)=>`<img src="${src}" width="${w}" height="${h}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
+const pics=(b,p)=>(b.src||b.im.map(IMG)).map((src,i)=>{const d=b.dim||DIM[b.im[i]]||[1800,1013];return pic(src,d[0],d[1],p.n+' — imagen '+(i+1))}).join('');
+const pg=(f,i)=>`p/${f}/p-${pad2(i)}.jpg`;
+const BLOCK={
+ full:(b,p)=>`<div class="m-full">${pics(b,p)}</div>`,
+ fit:(b,p)=>`<div class="m-fit">${pics(b,p)}</div>`,
+ grid:(b,p)=>`<div class="m-grid" style="--c:${b.c}"${b.solo?' data-solo':''}>${pics(b,p)}</div>`,
+ none:()=>`<p class="cnone">Las imágenes de este proyecto todavía no están en este ordenador.</p>`,
+ video:(b,p)=>`<div class="m-video"><video src="${b.src}" poster="${b.poster}" controls muted playsinline preload="none" aria-label="${esc(p.n)} — vídeo"></video></div>`,
+ link:b=>`<figure class="frame"><div class="bar"><i></i><i></i><i></i><b>${esc(b.url.replace(/^https?:\/\/(www\.)?/,''))}</b></div><p class="blink"><a href="${b.url}" target="_blank" rel="noopener">${b.label} ↗</a></p></figure>`,
+ doc:(b,p)=>`<figure class="frame doc" style="--rw:${(b.r.split('/')[0]/b.r.split('/')[1]).toFixed(3)}" tabindex="0" data-f="${b.f}" data-n="${b.n}" aria-label="${esc(b.label)}, ${b.n} páginas. Flechas izquierda y derecha para pasar página.">
+   <div class="bar"><i></i><i></i><i></i><b>${esc(p.n)} — ${b.label}</b></div>
+   <div class="doc-stage" style="--r:${b.r}"><img src="${pg(b.f,1)}" alt="${esc(p.n)}, ${b.label}, página 1 de ${b.n}" loading="lazy"><button type="button" data-d="-1" tabindex="-1" aria-label="Página anterior"></button><button type="button" data-d="1" tabindex="-1" aria-label="Página siguiente"></button></div>
+   <figcaption class="doc-foot"><span>${b.label}</span><div><button type="button" data-d="-1" aria-label="Página anterior" disabled>←</button><span class="doc-n">1 / ${b.n}</span><button type="button" data-d="1" aria-label="Página siguiente">→</button></div></figcaption></figure>`,
+ sketch:()=>`<div class="sk"><div><canvas id="skc" width="600" height="600" aria-label="Mosaico interactivo: mueve el cursor para cambiar el tamaño de los rectángulos"></canvas>
+   <div class="sk-pick">${[1,2,3].map(i=>`<button type="button" data-sk="${i}" aria-pressed="${i===1}" aria-label="Imagen ${i}"><img src="p/img/sk-${i}.jpg" alt=""></button>`).join('')}</div></div>
+   <figure class="frame"><div class="bar"><i></i><i></i><i></i><b>ejercicio_imagen_movimiento.pde</b></div><pre>${esc(PDE)}</pre></figure></div>`
+};
+
+/* index */
+$('#wcount').textContent=PROJ.length;
+$('#rows').innerHTML=PROJ.map((p,i)=>`<li><button type="button" class="row" data-p="${p.id}"><span class="rn">${pad2(i+1)}</span><span class="rt"><span>${esc(p.n)}</span></span><span class="rs">${esc(p.s)}</span><span class="ry">${p.y}</span></button></li>`).join('');
+
+/* hover: a real photo of the project follows the cursor, slightly behind */
+if(matchMedia('(hover:hover) and (pointer:fine)').matches){
+  let tx=0,ty=0,x=0,y=0,raf=0,cur='';
+  const step=()=>{const k=calm?1:.18;x+=(tx-x)*k;y+=(ty-y)*k;peek.style.transform=`translate(${Math.round(x)}px,${Math.round(y)}px)`;raf=peek.hidden?0:requestAnimationFrame(step)};
+  const aim=e=>{const w=250,h=peek.offsetHeight||240;tx=Math.min(e.clientX+26,innerWidth-w-12);ty=Math.max(12,Math.min(e.clientY+18,innerHeight-h-12))};
+  $('#rows').addEventListener('pointermove',e=>{const r=e.target.closest('.row');const p=r&&PROJ.find(q=>q.id===r.dataset.p);
+    if(!p||!p.th){peek.hidden=true;cur='';return}
+    aim(e);
+    if(cur!==p.id){cur=p.id;$('#peekimg').src='p/t/'+p.id+'.jpg';$('#peekname').textContent=p.id+'.jpg'}
+    if(peek.hidden){peek.hidden=false;x=tx;y=ty}
+    if(!raf)raf=requestAnimationFrame(step)});
+  $('#rows').addEventListener('pointerleave',()=>{peek.hidden=true;cur=''});
+}
+
+/* project page */
+function caseHtml(p,i){
+  const prev=PROJ[(i-1+PROJ.length)%PROJ.length],next=PROJ[(i+1)%PROJ.length];
+  const links=(p.links||[]).concat(p.media.filter(b=>b.t==='link').map(b=>[b.url,b.label]));
+  return `<div class="wsub"><button type="button" data-go="work">← INDEX</button><div><button type="button" data-p="${prev.id}" aria-label="Proyecto anterior: ${esc(prev.n)}">← ${pad2((i-1+PROJ.length)%PROJ.length+1)}</button><button type="button" data-p="${next.id}" aria-label="Proyecto siguiente: ${esc(next.n)}">${pad2((i+1)%PROJ.length+1)} →</button></div></div>
+  <article class="case"><header class="chead"><p class="cnum">${pad2(i+1)} / ${PROJ.length}</p><h1>${esc(p.n)}</h1><p class="csub">${esc(p.s)}</p></header>
+  <div class="cinfo"><div class="ctext">${p.d?`<p>${esc(p.d)}</p>`:''}</div>
+  <dl class="cmeta"><dt>Año</dt><dd>${p.y}</dd><dt>Disciplinas</dt><dd>${esc(p.tags)}</dd>${p.w?`<dt>Créditos</dt><dd>${esc(p.w)}</dd>`:''}${links.length?`<dt>Enlaces</dt><dd>${links.map(l=>`<a href="${l[0]}" target="_blank" rel="noopener">${l[1]} ↗</a>`).join('')}</dd>`:''}</dl></div>
+  <div class="cmedia">${p.media.map(b=>BLOCK[b.t](b,p)).join('')}</div>
+  <nav class="cnext" aria-label="Otros proyectos"><button type="button" data-p="${prev.id}"><small>← ${pad2((i-1+PROJ.length)%PROJ.length+1)}</small><span>${esc(prev.n)}</span></button><button type="button" data-p="${next.id}"><small>${pad2((i+1)%PROJ.length+1)} →</small><span>${esc(next.n)}</span></button></nav></article>`;
+}
+/* document viewer: one page at a time, like Preview */
+function turn(doc,d){
+  const n=+doc.dataset.n,f=doc.dataset.f,i=Math.max(1,Math.min(n,(+doc.dataset.i||1)+d));if(i===(+doc.dataset.i||1))return;
+  doc.dataset.i=i;const im=$('.doc-stage img',doc);im.src=pg(f,i);im.alt=im.alt.replace(/página \d+/,'página '+i);
+  $('.doc-n',doc).textContent=i+' / '+n;const b=$$('.doc-foot button',doc);b[0].disabled=i<=1;b[1].disabled=i>=n;
+  if(i<n){const pre=new Image();pre.src=pg(f,i+1)}
+}
+wcase.addEventListener('click',e=>{const b=e.target.closest('[data-d]');if(b){turn(b.closest('.doc'),+b.dataset.d);return}
+  const s=e.target.closest('[data-sk]');if(s)sketchLoad(+s.dataset.sk)});
+wcase.addEventListener('keydown',e=>{const d=e.target.closest('.doc');if(!d)return;if(e.key==='ArrowRight'){e.preventDefault();turn(d,1)}else if(e.key==='ArrowLeft'){e.preventDefault();turn(d,-1)}});
+
+/* Processing sketch, ported line for line: X sets the width of each rectangle, Y the height */
+let skData=null;
+function sketchDraw(xs,ys){const c=$('#skc');if(!c||!skData)return;const g=c.getContext('2d');g.putImageData(skData,0,0);const d=skData.data;
+  for(let i=0;i<600;i+=xs)for(let j=0;j<600;j+=ys){const k=(j*600+i)*4;g.fillStyle=`rgb(${d[k]},${d[k+1]},${d[k+2]})`;g.fillRect(i,j,xs,ys)}}
+function sketchLoad(n){const c=$('#skc');if(!c)return;$$('[data-sk]',wcase).forEach(b=>b.setAttribute('aria-pressed',+b.dataset.sk===n));
+  const im=new Image();im.onload=()=>{const g=c.getContext('2d');g.drawImage(im,0,0,600,600);try{skData=g.getImageData(0,0,600,600);sketchDraw(15,15)}catch(_){skData=null}};im.src='p/img/sk-'+n+'.jpg'}
+function sketchInit(){const c=$('#skc');if(!c)return;skData=null;sketchLoad(1);
+  c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect(),m=v=>Math.max(2,Math.min(60,Math.floor(2+v*58)));
+    sketchDraw(m((e.clientX-r.left)/r.width),m((e.clientY-r.top)/r.height))})}
+
+/* routing: #work is the index, #p-<id> a project; anything else is home */
+let here='';
+function route(h){
+  h=h||'';const i=PROJ.findIndex(p=>'p-'+p.id===h);
+  if(h!=='work'&&i<0){here='';work.hidden=true;peek.hidden=true;desk.inert=false;return}
+  if(work.hidden){$$('.win').forEach(w=>{if(w.id!=='w-gate')closeWin(w)});hideDots()}
+  work.hidden=false;desk.inert=true;peek.hidden=true;
+  if(i<0){widx.hidden=false;wcase.hidden=true;wcase.innerHTML='';delete work.dataset.tone;work.style.removeProperty('--acc')}
+  else{const p=PROJ[i];widx.hidden=true;wcase.hidden=false;wcase.innerHTML=caseHtml(p,i);
+    if(p.tone)work.dataset.tone=p.tone;else delete work.dataset.tone;
+    if(p.acc)work.style.setProperty('--acc',p.acc);else work.style.removeProperty('--acc');
+    sketchInit()}
+  if(here!==h)work.scrollTop=0;here=h;
+}
+function go(h){try{if(location.hash.slice(1)!==h)location.hash=h}catch(_){}route(h)}
+addEventListener('hashchange',()=>route(location.hash.slice(1)));
+document.addEventListener('click',e=>{const p=e.target.closest('[data-p]');if(p){go('p-'+p.dataset.p);return}
+  if(e.target.closest('[data-home]'))go('')});
+OPEN.work=()=>go('work');
+try{route(location.hash.slice(1))}catch(_){}
+
+/* ───────── entrance: sound only if asked ───────── */
+(function gate(){
+  const s=document.createElement('div');s.id='scrim';document.body.appendChild(s);
+  alertWin({id:'w-gate',mark:'♪',w:340,y:.44,title:'This place has sound.',text:'AINOA.FM plays Ainoa’s Spotify playlist. Nothing plays unless you ask.',
+    buttons:[{label:'ENTER QUIETLY'},{label:'ENTER WITH SOUND',pri:1,act:()=>{play()}}]});
+})();
+</script>
+
+</body>
+</html>
