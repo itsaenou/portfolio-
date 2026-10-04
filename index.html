@@ -117,6 +117,9 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .pv p{margin:0;padding:9px 12px 11px;font-size:12px;line-height:1.45;border-top:1px solid #111110}
 .pv p b{font-weight:700}
 .pv p .btn{display:block;margin-top:8px}
+.vers{display:flex;gap:6px;padding:8px 12px;border-top:1px solid #111110}
+.vers .btn{padding:3px 10px}
+.vers .btn[aria-pressed="true"]{background:#111110;color:#fff}
 .pv pre{margin:0;padding:12px 14px;max-height:34vh;overflow:auto;font:11.5px/1.55 var(--mono);tab-size:4;border-top:1px solid #111110;background:#fff}
 .pv.py video{aspect-ratio:16/9;max-height:44vh}
 .pv p a.btn{display:block;width:fit-content;text-decoration:none}
@@ -1023,6 +1026,7 @@ const FILES=[
  {n:'mosaico.pde',k:'pde',thumb:1,cap:'<b>Imagen en movimiento</b> — Processing. Mueve el cursor por encima.',pid:'movimiento'},
  {n:'lily.html',k:'html',thumb:1,src:'p/lily/index.html',poster:'p/img/lily.jpg',cap:'<b>Lily</b> — vídeo, SVG y GSAP: cuatro recuadros se mueven sobre la flor, unidos por líneas, con números que cambian.'},
  {n:'tracker.py',k:'py',thumb:1,src:'p/v/blue-tracker.mp4',poster:'p/img/blue-tracker.jpg',code:TRACKER_PY,cap:'<b>Blue tracker</b> — Python, OpenCV y YOLO: detecta a las personas de un vídeo y marca solo a las que llevan azul.'},
+ {n:'emotional_chat.mov',k:'mov',thumb:1,w:640,ratio:'1920/1038',src:'p/v/emotional-chat-3.mp4',vers:['p/v/emotional-chat-1.mp4','p/v/emotional-chat-2.mp4','p/v/emotional-chat-3.mp4'],poster:'p/img/emotional-chat.jpg',url:'https://gitlab.com/ainoalopez/emotional-chat',cap:'<b>Emotional Chat</b> — un chat de WhatsApp convertido en pieza visual: a un lado los «oki», al otro mis mensajes.'},
  {n:'arduino_try_03.jpg',k:'jpg',src:'p/img/groc-4.jpg',w:340,cap:'<b>GROC</b> — la controladora: una esfera luminosa con Arduino.',pid:'groc',alt:'Una esfera amarilla encendida en una sala a oscuras.'},
  {n:'esfera_roja.jpg',k:'jpg',src:'p/img/groc-6.jpg',w:340,cap:'<b>GROC</b> — la controladora, en rojo.',pid:'groc',alt:'Dos manos sobre una esfera roja encendida.'},
  {n:'why_did_i_make_this.png',k:'jpg',src:'p/img/groc-3.jpg',cap:'<b>GROC</b> — pruebas de estrellas.',pid:'groc',alt:'Varias fotos de estrellas amarillas y de la esfera.'},
@@ -1052,6 +1056,7 @@ const CAPT={'creación con IA.':['creació amb IA.','made with AI.'],'Processing
  'cartel de combate.':['cartell de combat.','fight card.'],'cartel de evento.':['cartell d’esdeveniment.','event poster.'],'Pica Pica, versión verde.':['Pica Pica, versió verda.','Pica Pica, green version.'],
  'revista.':['revista.','magazine.'],'vídeo.':['vídeo.','video.'],
  'Python, OpenCV y YOLO: detecta a las personas de un vídeo y marca solo a las que llevan azul.':['Python, OpenCV i YOLO: detecta les persones d’un vídeo i marca només les que porten blau.','Python, OpenCV and YOLO: it finds the people in a video and marks only the ones wearing blue.'],
+ 'un chat de WhatsApp convertido en pieza visual: a un lado los «oki», al otro mis mensajes.':['un xat de WhatsApp convertit en peça visual: a una banda els «oki», a l’altra els meus missatges.','a WhatsApp chat turned into a visual piece: the “oki”s on one side, my messages on the other.'],
  'vídeo, SVG y GSAP: cuatro recuadros se mueven sobre la flor, unidos por líneas, con números que cambian.':['vídeo, SVG i GSAP: quatre requadres es mouen sobre la flor, units per línies, amb números que canvien.','video, SVG and GSAP: four squares drift over the flower, joined by lines, with numbers that keep changing.']};
 const capL=c=>{if(lang==='es')return c;const i=c.indexOf(' — '),k=i<0?c:c.slice(i+3),t=CAPT[k];return t?(i<0?'':c.slice(0,i+3))+t[lang==='ca'?0:1]:c};
 const pgEl=$('#pg'),pgField=$('#pgfield');let pgBuilt=false,pgMode='mess';
@@ -1059,8 +1064,10 @@ const pgThumb=f=>'p/pt/'+f.n.replace(/\.\w+$/,'')+'.jpg';
 function pgOpen(f){
   if(f.k==='jpg')return win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:f.w||500,x:.5,y:.46,html:`<img src="${f.src}" alt="${esc(f.alt||'')}"><p>${capL(f.cap)}${f.pid?`<button type="button" class="btn" data-p="${f.pid}">OPEN PROJECT</button>`:''}</p>`});
   if(f.k==='mov'){const fresh=!document.getElementById('w-pf-'+f.n);
-    const el=win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:320,x:.5,y:.46,html:`<video src="${f.src}" poster="${f.poster}" controls playsinline preload="none" aria-label="${esc(f.n)}"></video><p>${capL(f.cap)}</p>`});
-    if(fresh)$('video',el).addEventListener('play',()=>{if(sp&&playing)try{sp.pause()}catch(_){}});return el}
+    const el=win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:f.w||320,x:.5,y:.46,html:`<video src="${f.src}" poster="${f.poster}"${f.ratio?` style="aspect-ratio:${f.ratio}"`:''} controls playsinline preload="none" aria-label="${esc(f.n)}"></video>${f.vers?`<div class="vers" role="group" aria-label="Versions">${f.vers.map((v,i)=>`<button type="button" class="btn" data-v="${i}" aria-pressed="${v===f.src}">V${i+1}</button>`).join('')}</div>`:''}<p>${capL(f.cap)}${f.url?`<a class="btn" href="${f.url}" target="_blank" rel="noopener">CODE ↗</a>`:''}</p>`});
+    if(fresh){const v=$('video',el);v.addEventListener('play',()=>{if(sp&&playing)try{sp.pause()}catch(_){}});
+      el.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;$$('[data-v]',el).forEach(o=>o.setAttribute('aria-pressed',o===b));v.removeAttribute('poster');v.src=f.vers[+b.dataset.v];v.play().catch(()=>{})})}
+    return el}
   if(f.k==='py')return win({id:'w-pf-'+f.n,title:f.n,cls:'pv py',w:680,x:.5,y:.46,html:`<video src="${f.src}" poster="${f.poster}" controls muted loop playsinline preload="none" aria-label="${esc(f.n)}"></video><p>${capL(f.cap)}</p><pre tabindex="0" aria-label="${esc(f.n)}">${esc(f.code)}</pre>`});
   if(f.k==='html'){const el=win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:640,x:.5,y:.46,html:`<div class="emb" style="background-image:url(${f.poster})"><iframe src="${f.src}" title="${esc(f.n)}" tabindex="-1"></iframe></div><p>${capL(f.cap)}<a class="btn" href="${f.src}" target="_blank" rel="noopener">OPEN FULL SCREEN ↗</a></p>`});
     const e=$('.emb',el);$('iframe',e).style.transform=`scale(${e.clientWidth/1280})`;return el}
