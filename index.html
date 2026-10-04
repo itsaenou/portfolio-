@@ -59,6 +59,13 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .file:hover span,.file:focus-visible span{background:var(--blue);color:#fff}
 .file:focus-visible{outline:none}
 
+.lang{display:inline-flex;gap:8px}
+.lang button{padding:1px 3px;color:var(--mute);opacity:.75}
+.wbar .lang{margin-left:10px}
+.wbar .lang button{color:var(--cmute);margin-left:0}
+.lang button[aria-pressed="true"]{color:inherit;opacity:1;text-decoration:underline;text-underline-offset:4px}
+.meta .lang{display:flex;justify-content:flex-end;margin-top:8px}
+.meta .lang button:hover,.meta .lang button:focus-visible{background:var(--yellow);color:#111110;opacity:1}
 /* ───────── dots ───────── */
 .dot{position:absolute;left:calc(var(--x)*1%);top:calc(var(--y)*1%);width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;
   background:#fff;border:1px solid #111110;z-index:5;touch-action:none;
@@ -105,7 +112,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 #scrim{position:fixed;inset:0;z-index:95;background:#f3f3f08c}
 
 .pv .body{display:flex;flex-direction:column}
-.pv img{display:block;width:100%;max-height:62vh;object-fit:contain;background:#eeeeea}
+.pv img,.pv video{display:block;width:100%;max-height:62vh;object-fit:contain;background:#eeeeea}
+.pv video{background:#000}
 .pv p{margin:0;padding:9px 12px 11px;font-size:12px;line-height:1.45;border-top:1px solid #111110}
 .pv p b{font-weight:700}
 .pv p .btn{display:block;margin-top:8px}
@@ -198,8 +206,12 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .wbar [aria-current="page"]{text-decoration:underline;text-underline-offset:4px}
 
 .widx{padding-block:9vh 180px}
-.widx h1{margin:0 0 5vh;font:400 13px/1.35 var(--sans);letter-spacing:.04em;display:flex;gap:1.2em}
+.widx h1{margin:0 0 2.2vh;font:400 13px/1.35 var(--sans);letter-spacing:.04em;display:flex;gap:1.2em}
 .widx h1 span{color:var(--cmute);font-variant-numeric:tabular-nums}
+.wfilt{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 5vh;max-width:980px;font:11px var(--sys);letter-spacing:.06em;text-transform:uppercase}
+.wfilt button{padding:1px 4px;margin-left:-4px;color:var(--cmute)}
+.wfilt button:hover,.wfilt button:focus-visible{background:var(--yellow);color:#111110}
+.wfilt button[aria-pressed="true"]{background:var(--blue);color:#fff}
 .rows{list-style:none;margin:0;padding:0}
 .row{display:grid;grid-template-columns:3.4em minmax(0,1fr) minmax(0,1.5fr) 5.2em;column-gap:18px;align-items:baseline;width:100%;padding-block:.36em;
   font-size:clamp(15px,1.5vw,21px);line-height:1.25;text-transform:uppercase;letter-spacing:.01em}
@@ -281,12 +293,39 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 }
 @media (max-width:519px){.m-grid[data-solo]{grid-template-columns:minmax(0,1fr)}}
 
+/* ───────── PLAYGROUND: the one folder nobody tidied ───────── */
+.pg{--cbg:#f3f3f0;--cfg:#111110;--cmute:#84847e;position:fixed;inset:0;z-index:60;overflow-y:auto;overflow-x:hidden;background:var(--cbg);color:var(--cfg);padding:env(safe-area-inset-top,0px) var(--gut) 0}
+.pg :focus-visible{outline-color:var(--blue)}
+.pg-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 24px;padding-block:7vh 3vh}
+.pg-head h1{margin:0;font:400 13px/1.35 var(--sys);display:flex;gap:1.2em}
+.pg-head h1 span{color:var(--cmute)}
+.pg-sort{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;font:11px var(--sys);letter-spacing:.06em;color:var(--cmute)}
+.pg-sort button{color:var(--cfg);padding:1px 4px}
+.pg-sort button:hover,.pg-sort button:focus-visible{background:var(--yellow);color:#111110}
+.pg-sort button[aria-pressed="true"]{background:var(--blue);color:#fff}
+.pg-field{position:relative;margin-bottom:190px}
+.pf{position:absolute;left:0;top:0;width:118px;display:flex;flex-direction:column;align-items:center;gap:6px;font:11px/1.25 var(--sys);text-align:center;touch-action:none;
+  transform:translate(var(--x,0px),var(--y,0px));transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.pf.drag{transition:none;z-index:5;cursor:grabbing}
+.pf img{display:block;max-width:76px;max-height:76px;width:auto;height:auto;background:#fff;padding:3px;border:1px solid #111110;pointer-events:none;user-select:none}
+.pf i{display:block;width:44px;height:56px;background:#fff;border:1px solid #111110;position:relative;font:normal 9px/56px var(--mono);letter-spacing:.04em;color:#111110}
+.pf i::after{content:"";position:absolute;right:-1px;top:-1px;width:12px;height:12px;background:var(--cbg);border-left:1px solid #111110;border-bottom:1px solid #111110}
+.pf span{padding:1px 5px;border-radius:3px;overflow-wrap:anywhere;max-width:100%}
+.pf:hover span,.pf:focus-visible span{background:var(--blue);color:#fff}
+.pf:focus-visible{outline:none}
+.pv .sk-win{padding:12px}
+.pv .sk-win canvas{display:block;width:100%;height:auto;aspect-ratio:1;background:#e8e8e3;touch-action:none;cursor:crosshair}
+.pv .sk-win .sk-pick{margin-top:8px}
+.pv .sk-win .sk-pick button{border-color:#11111024}
+.pv .sk-win .sk-pick button[aria-pressed="true"]{border-color:#111110;outline:1px solid #111110}
+
 /* ───────── narrow screens ───────── */
 @media (max-width:819px){
   .desk{display:flex;flex-direction:column;gap:0;padding-bottom:150px}
   .meta{text-align:left;margin-top:14px}
   .meta span{display:inline}
   .meta span+span::before{content:" · "}
+  .meta .lang{display:inline-flex;margin:0}
   .me{order:3;align-self:center;height:auto;width:78%;margin:44px 0 0}
   .hand{left:19%;top:95%;font-size:24px}
   .nav{order:4;align-self:flex-start;flex-direction:row;flex-wrap:wrap;gap:6px 18px;margin:56px 0 0}
@@ -313,6 +352,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <span>Barcelona / BCN</span>
     <span id="clock">--:--:--</span>
     <span>2026</span>
+    <span class="lang" role="group" aria-label="Language of the project texts"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="ca">CA</button></span>
   </div>
 
   <nav class="nav" aria-label="Sections">
@@ -345,14 +385,38 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
       <button type="button" data-go="about">ABOUT</button>
       <button type="button" data-go="playground">PLAYGROUND</button>
       <button type="button" data-go="contact">CONTACT</button>
+      <span class="lang" role="group" aria-label="Language of the project texts"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="ca">CA</button></span>
     </nav>
   </div>
   <div class="widx" id="widx">
     <h1>WORK <span id="wcount"></span></h1>
+    <div class="wfilt" id="wfilt" role="group" aria-label="Filter projects by discipline"></div>
     <ol class="rows" id="rows"></ol>
   </div>
-  <div id="wcase" lang="es" hidden></div>
+  <div id="wcase" hidden></div>
 </section>
+<section class="pg" id="pg" hidden aria-label="Playground">
+  <div class="wbar">
+    <button type="button" data-home>AINOA LÓPEZ MARTÍN</button>
+    <nav aria-label="Sections">
+      <button type="button" data-go="work">WORK</button>
+      <button type="button" data-go="about">ABOUT</button>
+      <button type="button" data-go="playground" aria-current="page">PLAYGROUND</button>
+      <button type="button" data-go="contact">CONTACT</button>
+      <span class="lang" role="group" aria-label="Language of the project texts"><button type="button" data-lang="en">EN</button><button type="button" data-lang="es">ES</button><button type="button" data-lang="ca">CA</button></span>
+    </nav>
+  </div>
+  <div class="pg-head">
+    <h1>untitled folder 3 <span id="pgcount"></span></h1>
+    <div class="pg-sort" role="group" aria-label="Arrange files">ARRANGE BY
+      <button type="button" data-sort="mess" aria-pressed="true">MESS</button>
+      <button type="button" data-sort="name" aria-pressed="false">NAME</button>
+      <button type="button" data-sort="kind" aria-pressed="false">KIND</button>
+    </div>
+  </div>
+  <div class="pg-field" id="pgfield"></div>
+</section>
+
 <div class="peek" id="peek" hidden aria-hidden="true"><div class="bar"><b id="peekname"></b></div><img id="peekimg" alt=""></div>
 
 <section class="fm" id="fm" aria-label="AINOA.FM player">
@@ -459,7 +523,7 @@ function alertWin({id,mark='!',title,text,buttons,w=330,x=.5,y=.4}){
     ($('.pri',el)||$('.btn',el)).focus({preventScroll:true})}
   return el;
 }
-addEventListener('keydown',e=>{if(e.key!=='Escape')return;const top=$$('.win').sort((a,b)=>b.style.zIndex-a.style.zIndex)[0];if(top)closeWin(top);else if(!work.hidden)go(wcase.hidden?'':'work')});
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;const top=$$('.win').sort((a,b)=>b.style.zIndex-a.style.zIndex)[0];if(top)closeWin(top);else if(!work.hidden)go(wcase.hidden?'':'work');else if(!pgEl.hidden)go('')});
 
 /* ───────── the things you can open ───────── */
 const OPEN={
@@ -645,7 +709,7 @@ const PROJ=[
   media:[{t:'doc',f:'tel',n:22,r:'16/9',label:'Proyecto completo'}]},
  {id:'anemoia',n:'Anemoia',y:'2026',th:1,
   s:'Creación con IA · instalaciones sensoriales',
-  tags:'Branding · Diseño gráfico',
+  tags:'Branding · Diseño gráfico · IA & experimentación',
   d:'Anemoia: la nostalgia por un tiempo, lugar o época que nunca se ha vivido. Un proyecto de visuales generativos con IA que traduce esa emoción compleja a los cinco sentidos (ver, oír, oler, tocar y saborear) como instalaciones imaginadas, cada una con su concepto y su prompt.',
   w:'Con Mariana, Camila, Pol y Jan',
   media:[{t:'full',im:['anemoia-01']},{t:'grid',c:2,im:an(2,7)},{t:'grid',c:4,im:an(8,15)}]},
@@ -765,30 +829,53 @@ for (int i = 0; i < width; i= i + xstep){
   }
 }`;
 
+/* ───────── languages — project texts only. Whatever the site says in English stays in English. ───────── */
+const TR={"groc":{"ca":{"s":"Un videojoc i una controladora per entendre l'ansietat","d":"GROC és una eina de suport emocional en forma de videojoc narratiu. Un laberint de píxels representa l'ansietat i les estrelles que recollites simbolitzen estratègies d'afrontament, com la respiració conscient. Es juga amb una controladora física: una esfera lluminosa amb giroscopi i matriu LED, connectada amb Arduino i Unity.","w":"Projecte d'ELISAVA, amb Rexin Ye. La meva part: branding, disseny gràfic i editorial; vam crear junts el videojoc en Unity i la web, el tràiler en After Effects i la controladora alternativa amb Arduino i giroscopi.","l":"Veure el reel a Instagram"},"en":{"s":"A game and a controller to understand anxiety","d":"GROC is an emotional support tool in the form of a narrative video game. A pixel maze represents anxiety, and the stars you collect stand for coping strategies, like mindful breathing. It is played with a physical controller: a glowing sphere with a gyroscope and LED matrix, connected through Arduino and Unity.","w":"ELISAVA project, with Rexin Ye. My part: branding, graphic and editorial design; together we built the Unity game and the website, the After Effects trailer and the alternative controller with Arduino and a gyroscope.","l":"Watch the reel on Instagram"}},"gnubemail":{"ca":{"s":"Un guant que converteix la sobrecàrrega digital en una pausa","d":"Pot la hibernació ser una nova manera de desconnectar de la feina digital sense sentir-se culpable? Gnubemail és un guant que mesura l'estrès digital a través dels correus sense llegir de Gmail i crea una pausa física: no avisa, no notifica, interromp. Funciona amb Google Apps Script, un ESP32 amb WiFi i un servomotor. Un projecte crític amb la ideologia de l'eficiència i la productivitat."},"en":{"s":"A glove that turns digital overload into a pause","d":"Can hibernation become a new way to disconnect from digital work without feeling guilty? Gnubemail is a glove that measures digital stress through unread Gmail emails and creates a physical pause: it doesn't notify, it doesn't warn, it interrupts. Built with Google Apps Script, a WiFi ESP32 and a servo motor. A critical project against the ideology of efficiency and productivity."}},"telegrafo":{"ca":{"s":"Projecte de recerca · Teories crítiques, ELISAVA","d":"Projecte de recerca: pot un sistema de telègrafs òptics transmetre «mama nem a sopar» entre Montserrat i Montjuïc, entre les 9h i les 21h, de manera 100% analògica? Caminant es tarda 12–14 hores; amb una línia visual contínua de torres històriques (Can Dolcet, Esparreguera, Castellbisbal, Sant Pere Màrtir i el Castell de Montjuïc) el missatge arriba en 2–4 minuts. Estudiem l'emissor i la codificació, la xarxa de retransmissors, la hipòtesi de descodificació i el temps total d'enviament, i ho convertim en una gincana on cada grup és una torre i retransmet amb el cos la postura-símbol rebuda. Fes clic en una imatge per veure tot el procés.","w":"Amb Marta Alcázar, Blanca González, Laura Ibáñez i Rexin Ye · Teories crítiques, grup 3, curs 2025-26"},"en":{"s":"Research project · Critical theories, ELISAVA","d":"Research project: can a system of optical telegraphs relay “mama nem a sopar” between Montserrat and Montjuïc, between 9am and 9pm, 100% analogue? Walking takes 12–14 hours; with a continuous line of sight between historic towers (Can Dolcet, Esparreguera, Castellbisbal, Sant Pere Màrtir and Montjuïc Castle) the message arrives in 2–4 minutes. We studied the sender and coding, the relay network, the decoding hypothesis and the total sending time, and turned it into a gymkhana where each group is a tower and relays the received symbol-posture with their body. Click an image to see the whole process.","w":"With Marta Alcázar, Blanca González, Laura Ibáñez and Rexin Ye · Critical Theories, group 3, 2025-26"}},"anemoia":{"ca":{"s":"Creació amb IA · instal·lacions sensorials","d":"Anemoia: la nostàlgia d'un temps, lloc o època que mai s'ha viscut. Un projecte de visuals generatius amb IA que tradueix aquesta emoció complexa als cinc sentits (veure, sentir, olorar, tocar i tastar) com a instal·lacions imaginades, cadascuna amb el seu concepte i el seu prompt.","w":"Amb Mariana, Camila, Pol i Jan"},"en":{"s":"AI creation · sensory installations","d":"Anemoia: nostalgia for a time, place or era you have never known. A generative-AI visuals project that translates this complex emotion into the five senses (see, hear, smell, touch, taste) as imagined installations, each with its concept and prompt.","w":"With Mariana, Camila, Pol and Jan"}},"afl":{"ca":{"s":"Cartells per a la lliga AFL","d":"Cartells de combat i cartell d'esdeveniment per a l'AFL (Ansgar Fighting League, Prospect Series) a Barcelona: AFL 10 (22.04.23) i AFL 12 (01.07.23). Treball fet amb Estudio Bengala."},"en":{"s":"Posters for the AFL league","d":"Fight cards and an event poster for the AFL (Ansgar Fighting League, Prospect Series) in Barcelona: AFL 10 (22.04.23) and AFL 12 (01.07.23). Made with Estudio Bengala."}},"fauces":{"ca":{"s":"Identitat i manual de marca","d":"Manual de normes i usos de la marca gràfica: perfil, origen i construcció del logotip, versions, tipografies, cromatisme, recursos, layout i aplicacions (35 pàgines)."},"en":{"s":"Brand identity and guidelines","d":"Brand guidelines: profile, origin and construction of the logo, versions, typefaces, colour, resources, layout and applications (35 pages)."}},"ipsom":{"ca":{"s":"Presentació de gestió d'ajudes","d":"Presentació corporativa d'Ipsom, consultoria especialitzada en gestió d'ajudes i subvencions: qui són, abast del servei i com treballen (11 pàgines)."},"en":{"s":"Grants management presentation","d":"Corporate presentation for Ipsom, a consultancy specialised in grants and subsidies management: who they are, scope of service and how they work (11 pages)."}},"ensporten":{"ca":{"s":"App de repartiment 100% sostenible","d":"Ensporten és una app de paqueteria ecològica instantània per al comerç local: ajuda el petit comerç a competir amb les grans superfícies. Projecte del CFGS d'Interactiva 2022 (EAD Sant Cugat): identitat de marca, manual, disseny de l'app, animacions i prototip amb Adobe Illustrator, After Effects i Figma.","l":"Obrir el prototip a Figma"},"en":{"s":"A 100% sustainable delivery app","d":"Ensporten is an instant, eco-friendly parcel app for local shops, helping small businesses compete with big retailers. CFGS Interactive 2022 project (EAD Sant Cugat): brand identity, brand book, app design, animations and prototype in Adobe Illustrator, After Effects and Figma.","l":"Open the prototype in Figma"}},"emotion":{"ca":{"s":"Identitat per a un centre d'arteteràpia i musicoteràpia","d":"Emotion és un centre d'arteteràpia i musicoteràpia a Sant Cugat del Vallès. Projecte integrat de 2n de Gràfica Impresa (EAD Sant Cugat, 2022-2023): recerca, naming, logotip i isotip, colors i tipografies corporatius, elements gràfics, campanya i merchandising."},"en":{"s":"Identity for an art & music therapy centre","d":"Emotion is an art and music therapy centre in Sant Cugat del Vallès. Integrated project for the 2nd year of Print Graphics (EAD Sant Cugat, 2022-2023): research, naming, logo and symbol, brand colours and typefaces, graphic elements, campaign and merchandising."}},"goodnews":{"ca":{"s":"Disseny editorial"},"en":{"s":"Editorial design"}},"polurbano":{"ca":{"s":"Sessió de fotos per a l'artista @pol.urbano","d":"Sessió de fotografia per a l'artista @pol.urbano, amb fons de color vermell i taronja i direcció de la pose al plató.","w":"Fotografia: Ainoa López","l":"Veure a Instagram"},"en":{"s":"Photo shoot for the artist @pol.urbano","d":"Photo shoot for the artist @pol.urbano, with a red and orange backdrop and posing direction on set.","w":"Photography: Ainoa López","l":"View on Instagram"}},"movimiento":{"ca":{"s":"Animació amb codi · Processing","d":"Exercici d'animació amb codi en Processing: la imatge es converteix en un mosaic de píxels la mida del qual controla el ratolí. L'eix X canvia l'amplada i l'eix Y l'alçada de cada rectangle, que pren el color de la imatge original. Prova-ho amb les tres imatges."},"en":{"s":"Code animation · Processing","d":"Code animation exercise in Processing: the image becomes a mosaic of pixels whose size is controlled by the mouse. The X axis changes the width and the Y axis the height of each rectangle, which takes its colour from the original image. Try it with the three images."}},"lineapelle":{"ca":{"s":"Disseny de l'estand","d":"Disseny de l'estand per a Lineapelle: distribució de l'espai, mobiliari, mesures i colors."},"en":{"s":"Stand design","d":"Stand design for Lineapelle: space layout, furniture, dimensions and colours."}},"campanas":{"ca":{"s":"Creació i direcció de campanyes","d":"Creació i direcció de campanyes per a Rubí Zippers, produïdes amb Gravem: concepte, direcció d'art i coordinació del rodatge en plató.","w":"Amb Gravem"},"en":{"s":"Campaign creation and direction","d":"Creation and direction of campaigns for Rubí Zippers, produced with Gravem: concept, art direction and coordination of the studio shoot.","w":"With Gravem"}},"video-da":{"ca":{"s":"Direcció d'art i coordinació","w":"Direcció d'art i coordinació: Ainoa López","l":"Veure el vídeo a YouTube"},"en":{"s":"Art direction and coordination","w":"Art direction and coordination: Ainoa López","l":"Watch the video on YouTube"}},"web":{"ca":{"s":"Lloc web corporatiu","d":"Web corporativa de Rubí Zippers, fabricant de cremalleres de Barcelona des de 1926: col·leccions, cursors, sostenibilitat i recursos tècnics descarregables per a moda, denim, outdoor i marroquineria de luxe.","w":"Amb Motto Agency","l":"Veure el web"},"en":{"s":"Corporate website","d":"Corporate website for Rubí Zippers, a Barcelona zipper manufacturer since 1926: collections, sliders, sustainability and downloadable technical resources for fashion, denim, outdoor and luxury leather goods.","w":"With Motto Agency","l":"Visit the website"}},"picapica":{"ca":{"s":"Cartell-invitació de la festa de Nadal","d":"Cartell-invitació del «Pica Pica» de Rubí Zippers: divendres 19 de desembre a les 14:30h. Dues versions: una vermella amb il·lustracions a línia de plats i tomàquets, i una altra verda nadalenca.","w":"Disseny a Rubí Zippers"},"en":{"s":"Christmas party invitation poster","d":"Invitation poster for Rubí Zippers' “Pica Pica” party: Friday 19 December, 2:30pm. Two versions: a red one with line illustrations of dishes and tomatoes, and a green Christmas one.","w":"Designed at Rubí Zippers"}},"santjoan":{"ca":{"s":"Cartell de Sant Joan","d":"Cartell de la revetlla de Sant Joan per a Rubí Zippers: una cremallera que s'obre en una guspira de petard, amb el lema «La guspira que ens uneix».","w":"Disseny a Rubí Zippers"},"en":{"s":"Sant Joan poster","d":"Sant Joan bonfire-night poster for Rubí Zippers: a zipper that opens into a firecracker spark, with the line “La guspira que ens uneix” (the spark that unites us).","w":"Designed at Rubí Zippers"}},"cien":{"ca":{"s":"Logotip del centenari","w":"Disseny a Rubí Zippers"},"en":{"s":"Centenary logo","w":"Designed at Rubí Zippers"}},"merch":{"ca":{"s":"Bosses, dessuadores i llibretes del centenari","d":"Merchandising per al centenari de Rubí Zippers (1926-2026): bosses shopper (una amb el «100» i una altra amb una il·lustració de Cremalleras Relámpago que recorda els inicis de la marca), dessuadores amb el logotip i un gran «100» a l'esquena, i llibretes vermelles amb el logotip en relleu i una col·lecció de tiradors de cremallera.","w":"Disseny a Rubí Zippers"},"en":{"s":"Centenary bags, hoodies and notebooks","d":"Merchandising for Rubí Zippers' centenary (1926-2026): shopper bags (one with the “100” and one with a Cremalleras Relámpago illustration recalling the beginnings of the brand), hoodies with the logo and a big “100” on the back, and red notebooks with an embossed logo and a collection of zipper pulls.","w":"Designed at Rubí Zippers"}},"ovalo":{"ca":{"s":"Manual de marca","l":"Veure a Behance"},"en":{"s":"Brand manual","l":"View on Behance"}},"afloral":{"ca":{"s":"Manual de marca","l":"Veure a Behance"},"en":{"s":"Brand manual","l":"View on Behance"}},"3d":{"ca":{"s":"Animació 3D","l":"Veure a Behance"},"en":{"s":"3D animation","l":"View on Behance"}}};
+const ROLE3={"es":["Diseño gráfico","Dirección de arte","Diseño UX/UI","Diseño interactivo","Creative Technology","Fotografía & audiovisual","Branding","Project management","IA & experimentación","3D & prototipado"],"ca":["Disseny gràfic","Direcció d'art","Disseny UX/UI","Disseny interactiu","Creative Technology","Fotografia & audiovisual","Branding","Project management","IA & experimentació","3D & prototipatge"],"en":["Graphic design","Art direction","UX/UI design","Interactive design","Creative Technology","Photography & audiovisual","Branding","Project management","AI & experimentation","3D & prototyping"]};
+const UI={
+ es:{year:'Año',disc:'Disciplinas',cred:'Créditos',links:'Enlaces',none:'Las imágenes de este proyecto todavía no están en este ordenador.',pages:'páginas',keys:'Flechas izquierda y derecha para pasar página.',prev:'Página anterior',next:'Página siguiente',img:'imagen',video:'vídeo',pprev:'Proyecto anterior',pnext:'Proyecto siguiente',others:'Otros proyectos',mosaic:'Mosaico interactivo: mueve el cursor para cambiar el tamaño de los rectángulos',pic:'Imagen',docs:{}},
+ ca:{year:'Any',disc:'Disciplines',cred:'Crèdits',links:'Enllaços',none:'Les imatges d’aquest projecte encara no són en aquest ordinador.',pages:'pàgines',keys:'Fletxes esquerra i dreta per passar pàgina.',prev:'Pàgina anterior',next:'Pàgina següent',img:'imatge',video:'vídeo',pprev:'Projecte anterior',pnext:'Projecte següent',others:'Altres projectes',mosaic:'Mosaic interactiu: mou el cursor per canviar la mida dels rectangles',pic:'Imatge',docs:{'Memoria completa':'Memòria completa','Manual de marca':'Manual de marca','Proyecto completo':'Projecte complet','Explicación técnica':'Explicació tècnica'}},
+ en:{year:'Year',disc:'Disciplines',cred:'Credits',links:'Links',none:'The images for this project are not on this computer yet.',pages:'pages',keys:'Left and right arrows turn the page.',prev:'Previous page',next:'Next page',img:'image',video:'video',pprev:'Previous project',pnext:'Next project',others:'Other projects',mosaic:'Interactive mosaic: move the cursor to change the size of the rectangles',pic:'Image',docs:{'Memoria completa':'Full report','Manual de marca':'Brand book','Proyecto completo':'Full project','Explicación técnica':'Technical explanation'}}};
+let lang=(()=>{let l='';try{l=localStorage.getItem('lang')||''}catch(_){}if(!UI[l])l=(navigator.language||'').slice(0,2);return UI[l]?l:'en'})();
+const U=()=>UI[lang];
+const tr=(p,k)=>lang==='es'?p[k]:(TR[p.id]&&TR[p.id][lang]&&TR[p.id][lang][k])||p[k];
+const role=t=>{const i=ROLE3.es.indexOf(t);return i<0?t:ROLE3[lang][i]};
+const docL=l=>U().docs[l]||l;
+const linkL=(p,i,l)=>i===0?tr(p,'l')||l:l;
+
 const work=$('#work'),widx=$('#widx'),wcase=$('#wcase'),desk=$('#desk'),peek=$('#peek');
 const pad2=n=>String(n).padStart(2,'0');
 const pic=(src,w,h,alt)=>`<img src="${src}" width="${w}" height="${h}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
-const pics=(b,p)=>(b.src||b.im.map(IMG)).map((src,i)=>{const d=b.dim||DIM[b.im[i]]||[1800,1013];return pic(src,d[0],d[1],p.n+' — imagen '+(i+1))}).join('');
+const pics=(b,p)=>(b.src||b.im.map(IMG)).map((src,i)=>{const d=b.dim||DIM[b.im[i]]||[1800,1013];return pic(src,d[0],d[1],p.n+' — '+U().img+' '+(i+1))}).join('');
 const pg=(f,i)=>`p/${f}/p-${pad2(i)}.jpg`;
 const BLOCK={
  full:(b,p)=>`<div class="m-full">${pics(b,p)}</div>`,
  fit:(b,p)=>`<div class="m-fit">${pics(b,p)}</div>`,
  grid:(b,p)=>`<div class="m-grid" style="--c:${b.c}"${b.solo?' data-solo':''}>${pics(b,p)}</div>`,
- none:()=>`<p class="cnone">Las imágenes de este proyecto todavía no están en este ordenador.</p>`,
- video:(b,p)=>`<div class="m-video"><video src="${b.src}" poster="${b.poster}" controls muted playsinline preload="none" aria-label="${esc(p.n)} — vídeo"></video></div>`,
- link:b=>`<figure class="frame"><div class="bar"><i></i><i></i><i></i><b>${esc(b.url.replace(/^https?:\/\/(www\.)?/,''))}</b></div><p class="blink"><a href="${b.url}" target="_blank" rel="noopener">${b.label} ↗</a></p></figure>`,
- doc:(b,p)=>`<figure class="frame doc" style="--rw:${(b.r.split('/')[0]/b.r.split('/')[1]).toFixed(3)}" tabindex="0" data-f="${b.f}" data-n="${b.n}" aria-label="${esc(b.label)}, ${b.n} páginas. Flechas izquierda y derecha para pasar página.">
-   <div class="bar"><i></i><i></i><i></i><b>${esc(p.n)} — ${b.label}</b></div>
-   <div class="doc-stage" style="--r:${b.r}"><img src="${pg(b.f,1)}" alt="${esc(p.n)}, ${b.label}, página 1 de ${b.n}" loading="lazy"><button type="button" data-d="-1" tabindex="-1" aria-label="Página anterior"></button><button type="button" data-d="1" tabindex="-1" aria-label="Página siguiente"></button></div>
-   <figcaption class="doc-foot"><span>${b.label}</span><div><button type="button" data-d="-1" aria-label="Página anterior" disabled>←</button><span class="doc-n">1 / ${b.n}</span><button type="button" data-d="1" aria-label="Página siguiente">→</button></div></figcaption></figure>`,
- sketch:()=>`<div class="sk"><div><canvas id="skc" width="600" height="600" aria-label="Mosaico interactivo: mueve el cursor para cambiar el tamaño de los rectángulos"></canvas>
-   <div class="sk-pick">${[1,2,3].map(i=>`<button type="button" data-sk="${i}" aria-pressed="${i===1}" aria-label="Imagen ${i}"><img src="p/img/sk-${i}.jpg" alt=""></button>`).join('')}</div></div>
+ none:()=>`<p class="cnone">${U().none}</p>`,
+ video:(b,p)=>`<div class="m-video"><video src="${b.src}" poster="${b.poster}" controls muted playsinline preload="none" aria-label="${esc(p.n)} — ${U().video}"></video></div>`,
+ link:(b,p)=>`<figure class="frame"><div class="bar"><i></i><i></i><i></i><b>${esc(b.url.replace(/^https?:\/\/(www\.)?/,''))}</b></div><p class="blink"><a href="${b.url}" target="_blank" rel="noopener">${linkL(p,0,b.label)} ↗</a></p></figure>`,
+ doc:(b,p)=>`<figure class="frame doc" style="--rw:${(b.r.split('/')[0]/b.r.split('/')[1]).toFixed(3)}" tabindex="0" data-f="${b.f}" data-n="${b.n}" aria-label="${esc(docL(b.label))}, ${b.n} ${U().pages}. ${U().keys}">
+   <div class="bar"><i></i><i></i><i></i><b>${esc(p.n)} — ${docL(b.label)}</b></div>
+   <div class="doc-stage" style="--r:${b.r}"><img src="${pg(b.f,1)}" alt="${esc(p.n)}, ${docL(b.label)}, 1 / ${b.n}" loading="lazy"><button type="button" data-d="-1" tabindex="-1" aria-label="${U().prev}"></button><button type="button" data-d="1" tabindex="-1" aria-label="${U().next}"></button></div>
+   <figcaption class="doc-foot"><span>${docL(b.label)}</span><div><button type="button" data-d="-1" aria-label="${U().prev}" disabled>←</button><span class="doc-n">1 / ${b.n}</span><button type="button" data-d="1" aria-label="${U().next}">→</button></div></figcaption></figure>`,
+ sketch:()=>`<div class="sk"><div><canvas id="skc" width="600" height="600" aria-label="${U().mosaic}"></canvas>
+   <div class="sk-pick">${[1,2,3].map(i=>`<button type="button" data-sk="${i}" aria-pressed="${i===1}" aria-label="${U().pic} ${i}"><img src="p/img/sk-${i}.jpg" alt=""></button>`).join('')}</div></div>
    <figure class="frame"><div class="bar"><i></i><i></i><i></i><b>ejercicio_imagen_movimiento.pde</b></div><pre>${esc(PDE)}</pre></figure></div>`
 };
 
 /* index */
 $('#wcount').textContent=PROJ.length;
-$('#rows').innerHTML=PROJ.map((p,i)=>`<li><button type="button" class="row" data-p="${p.id}"><span class="rn">${pad2(i+1)}</span><span class="rt"><span>${esc(p.n)}</span></span><span class="rs">${esc(p.s)}</span><span class="ry">${p.y}</span></button></li>`).join('');
+/* filters: the disciplines each project is tagged with */
+const TAGS=['Branding','Diseño gráfico','Dirección de arte','Diseño interactivo','Diseño UX/UI','Creative Technology','IA & experimentación','3D & prototipado','Fotografía & audiovisual','Project management'];
+const tagsOf=p=>p.tags.split(' · ');let wTag='';
+function wFilter(t){wTag=t;let n=0;$$('#rows li').forEach((li,i)=>{const on=!t||tagsOf(PROJ[i]).includes(t);li.hidden=!on;if(on)n++});
+  $('#wcount').textContent=t?n+' / '+PROJ.length:PROJ.length;$$('#wfilt button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t));peek.hidden=true}
+function wFilt(){$('#wfilt').innerHTML=`<button type="button" data-t="" aria-pressed="${!wTag}">All</button>`+TAGS.filter(t=>PROJ.some(p=>tagsOf(p).includes(t))).map(t=>`<button type="button" data-t="${esc(t)}" aria-pressed="${wTag===t}">${esc(role(t))}</button>`).join('')}
+wFilt();
+$('#wfilt').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b)wFilter(b.dataset.t)});
+function wRows(){$('#rows').innerHTML=PROJ.map((p,i)=>`<li><button type="button" class="row" data-p="${p.id}"><span class="rn">${pad2(i+1)}</span><span class="rt"><span>${esc(p.n)}</span></span><span class="rs">${esc(tr(p,'s'))}</span><span class="ry">${p.y}</span></button></li>`).join('');wFilter(wTag)}
+wRows();
 
 /* hover: a real photo of the project follows the cursor, slightly behind */
 if(matchMedia('(hover:hover) and (pointer:fine)').matches){
@@ -807,18 +894,18 @@ if(matchMedia('(hover:hover) and (pointer:fine)').matches){
 /* project page */
 function caseHtml(p,i){
   const prev=PROJ[(i-1+PROJ.length)%PROJ.length],next=PROJ[(i+1)%PROJ.length];
-  const links=(p.links||[]).concat(p.media.filter(b=>b.t==='link').map(b=>[b.url,b.label]));
-  return `<div class="wsub"><button type="button" data-go="work">← INDEX</button><div><button type="button" data-p="${prev.id}" aria-label="Proyecto anterior: ${esc(prev.n)}">← ${pad2((i-1+PROJ.length)%PROJ.length+1)}</button><button type="button" data-p="${next.id}" aria-label="Proyecto siguiente: ${esc(next.n)}">${pad2((i+1)%PROJ.length+1)} →</button></div></div>
-  <article class="case"><header class="chead"><p class="cnum">${pad2(i+1)} / ${PROJ.length}</p><h1>${esc(p.n)}</h1><p class="csub">${esc(p.s)}</p></header>
-  <div class="cinfo"><div class="ctext">${p.d?`<p>${esc(p.d)}</p>`:''}</div>
-  <dl class="cmeta"><dt>Año</dt><dd>${p.y}</dd><dt>Disciplinas</dt><dd>${esc(p.tags)}</dd>${p.w?`<dt>Créditos</dt><dd>${esc(p.w)}</dd>`:''}${links.length?`<dt>Enlaces</dt><dd>${links.map(l=>`<a href="${l[0]}" target="_blank" rel="noopener">${l[1]} ↗</a>`).join('')}</dd>`:''}</dl></div>
+  const links=(p.links||[]).concat(p.media.filter(b=>b.t==='link').map(b=>[b.url,b.label])).map((l,k)=>[l[0],linkL(p,k,l[1])]);const w=tr(p,'w'),d=tr(p,'d');
+  return `<div class="wsub"><button type="button" data-go="work">← INDEX</button><div><button type="button" data-p="${prev.id}" aria-label="${U().pprev}: ${esc(prev.n)}">← ${pad2((i-1+PROJ.length)%PROJ.length+1)}</button><button type="button" data-p="${next.id}" aria-label="${U().pnext}: ${esc(next.n)}">${pad2((i+1)%PROJ.length+1)} →</button></div></div>
+  <article class="case"><header class="chead"><p class="cnum">${pad2(i+1)} / ${PROJ.length}</p><h1>${esc(p.n)}</h1><p class="csub">${esc(tr(p,'s'))}</p></header>
+  <div class="cinfo"><div class="ctext">${d?`<p>${esc(d)}</p>`:''}</div>
+  <dl class="cmeta"><dt>${U().year}</dt><dd>${p.y}</dd><dt>${U().disc}</dt><dd>${esc(tagsOf(p).map(role).join(' · '))}</dd>${w?`<dt>${U().cred}</dt><dd>${esc(w)}</dd>`:''}${links.length?`<dt>${U().links}</dt><dd>${links.map(l=>`<a href="${l[0]}" target="_blank" rel="noopener">${l[1]} ↗</a>`).join('')}</dd>`:''}</dl></div>
   <div class="cmedia">${p.media.map(b=>BLOCK[b.t](b,p)).join('')}</div>
-  <nav class="cnext" aria-label="Otros proyectos"><button type="button" data-p="${prev.id}"><small>← ${pad2((i-1+PROJ.length)%PROJ.length+1)}</small><span>${esc(prev.n)}</span></button><button type="button" data-p="${next.id}"><small>${pad2((i+1)%PROJ.length+1)} →</small><span>${esc(next.n)}</span></button></nav></article>`;
+  <nav class="cnext" aria-label="${U().others}"><button type="button" data-p="${prev.id}"><small>← ${pad2((i-1+PROJ.length)%PROJ.length+1)}</small><span>${esc(prev.n)}</span></button><button type="button" data-p="${next.id}"><small>${pad2((i+1)%PROJ.length+1)} →</small><span>${esc(next.n)}</span></button></nav></article>`;
 }
 /* document viewer: one page at a time, like Preview */
 function turn(doc,d){
   const n=+doc.dataset.n,f=doc.dataset.f,i=Math.max(1,Math.min(n,(+doc.dataset.i||1)+d));if(i===(+doc.dataset.i||1))return;
-  doc.dataset.i=i;const im=$('.doc-stage img',doc);im.src=pg(f,i);im.alt=im.alt.replace(/página \d+/,'página '+i);
+  doc.dataset.i=i;const im=$('.doc-stage img',doc);im.src=pg(f,i);im.alt=im.alt.replace(/\d+ \/ \d+$/,i+' / '+n);
   $('.doc-n',doc).textContent=i+' / '+n;const b=$$('.doc-foot button',doc);b[0].disabled=i<=1;b[1].disabled=i>=n;
   if(i<n){const pre=new Image();pre.src=pg(f,i+1)}
 }
@@ -839,10 +926,11 @@ function sketchInit(){const c=$('#skc');if(!c)return;skData=null;sketchLoad(1);
 /* routing: #work is the index, #p-<id> a project; anything else is home */
 let here='';
 function route(h){
-  h=h||'';const i=PROJ.findIndex(p=>'p-'+p.id===h);
-  if(h!=='work'&&i<0){here='';work.hidden=true;peek.hidden=true;desk.inert=false;return}
-  if(work.hidden){$$('.win').forEach(w=>{if(w.id!=='w-gate')closeWin(w)});hideDots()}
-  work.hidden=false;desk.inert=true;peek.hidden=true;
+  h=h||'';const i=PROJ.findIndex(p=>'p-'+p.id===h),isPg=h==='playground';
+  if(h!=='work'&&i<0&&!isPg){here='';work.hidden=true;pgEl.hidden=true;peek.hidden=true;desk.inert=false;return}
+  if(here!==h){$$('.win').forEach(w=>{if(w.id!=='w-gate')closeWin(w)});hideDots()}
+  desk.inert=true;peek.hidden=true;work.hidden=isPg;pgEl.hidden=!isPg;
+  if(isPg){pgInit();if(here!==h)pgEl.scrollTop=0;here=h;return}
   if(i<0){widx.hidden=false;wcase.hidden=true;wcase.innerHTML='';delete work.dataset.tone;work.style.removeProperty('--acc')}
   else{const p=PROJ[i];widx.hidden=true;wcase.hidden=false;wcase.innerHTML=caseHtml(p,i);
     if(p.tone)work.dataset.tone=p.tone;else delete work.dataset.tone;
@@ -854,7 +942,96 @@ function go(h){try{if(location.hash.slice(1)!==h)location.hash=h}catch(_){}route
 addEventListener('hashchange',()=>route(location.hash.slice(1)));
 document.addEventListener('click',e=>{const p=e.target.closest('[data-p]');if(p){go('p-'+p.dataset.p);return}
   if(e.target.closest('[data-home]'))go('')});
-OPEN.work=()=>go('work');
+/* ───────── PLAYGROUND — experiments and loose files. Real material only; the two files that
+   "won't open" are jokes and show nothing. ───────── */
+const FILES=[
+ {n:'experiment_001.jpg',k:'jpg',src:'p/img/anemoia-08.jpg',cap:'<b>Anemoia</b> — creación con IA.',pid:'anemoia',alt:'Telas rojas y naranjas colgadas, atravesadas por la luz.'},
+ {n:'experiment_002.jpg',k:'jpg',src:'p/img/anemoia-12.jpg',cap:'<b>Anemoia</b> — creación con IA.',pid:'anemoia',alt:'Sábanas tendidas al amanecer delante de una casa.'},
+ {n:'experiment_003.jpg',k:'jpg',src:'p/img/anemoia-14.jpg',cap:'<b>Anemoia</b> — creación con IA.',pid:'anemoia',alt:'Imagen generada con IA del proyecto Anemoia.'},
+ {n:'experiment_004.jpg',k:'jpg',src:'p/img/anemoia-10.jpg',cap:'<b>Anemoia</b> — creación con IA.',pid:'anemoia',alt:'Imagen generada con IA del proyecto Anemoia.'},
+ {n:'mosaico.pde',k:'pde',thumb:1,cap:'<b>Imagen en movimiento</b> — Processing. Mueve el cursor por encima.',pid:'movimiento'},
+ {n:'arduino_try_03.jpg',k:'jpg',src:'p/img/groc-4.jpg',w:340,cap:'<b>GROC</b> — la controladora: una esfera luminosa con Arduino.',pid:'groc',alt:'Una esfera amarilla encendida en una sala a oscuras.'},
+ {n:'esfera_roja.jpg',k:'jpg',src:'p/img/groc-6.jpg',w:340,cap:'<b>GROC</b> — la controladora, en rojo.',pid:'groc',alt:'Dos manos sobre una esfera roja encendida.'},
+ {n:'why_did_i_make_this.png',k:'jpg',src:'p/img/groc-3.jpg',cap:'<b>GROC</b> — pruebas de estrellas.',pid:'groc',alt:'Varias fotos de estrellas amarillas y de la esfera.'},
+ {n:'manos_x30.jpg',k:'jpg',src:'p/gnu/p-08.jpg',cap:'<b>Gnubemail</b> — del proceso.',pid:'gnubemail',alt:'Una cuadrícula de fotos de manos en distintas posturas.'},
+ {n:'guante_3d.jpg',k:'jpg',src:'p/gnu/p-15.jpg',cap:'<b>Gnubemail</b> — guante impreso en 3D.',pid:'gnubemail',alt:'Lámina del proceso con el guante impreso en 3D.'},
+ {n:'servo_code.png',k:'jpg',src:'p/gnut/p-14.jpg',cap:'<b>Gnubemail</b> — el código que mantiene la tensión.',pid:'gnubemail',alt:'Captura del código del servomotor.'},
+ {n:'on_set.jpg',k:'jpg',src:'p/img/polurbano-set.jpg',w:340,cap:'<b>Pol Urbano</b> — en plató.',pid:'polurbano',alt:'La pantalla de una cámara en plató con un fondo rojo y naranja.'},
+ {n:'making_of.jpg',k:'jpg',src:'p/img/gravem-making.jpg',w:320,cap:'<b>Rubí Zippers</b> — rodaje con Gravem.',pid:'campanas',alt:'Rodaje en plató con cámara y trípode.'},
+ {n:'afl_10.jpg',k:'jpg',src:'p/img/afl10-a.jpg',cap:'<b>AFL · Estudio Bengala</b> — cartel de combate.',pid:'afl',alt:'Cartel de combate de la liga AFL.'},
+ {n:'afl_12.jpg',k:'jpg',src:'p/img/afl12.jpg',w:320,cap:'<b>AFL · Estudio Bengala</b> — cartel de evento.',pid:'afl',alt:'Cartel del evento AFL 12.'},
+ {n:'pica_pica_rojo.jpg',k:'jpg',src:'p/img/picapica.jpg',w:340,cap:'<b>Rubí Zippers</b> — Pica Pica.',pid:'picapica',alt:'Cartel rojo de la fiesta Pica Pica.'},
+ {n:'pica_pica_verde.jpg',k:'jpg',src:'p/img/picapica2.jpg',w:340,cap:'<b>Rubí Zippers</b> — Pica Pica, versión verde.',pid:'picapica',alt:'Cartel verde de la fiesta Pica Pica.'},
+ {n:'sant_joan.jpg',k:'jpg',src:'p/img/santjoan.jpg',w:340,cap:'<b>Rubí Zippers</b> — Sant Joan.',pid:'santjoan',alt:'Cartel de Sant Joan con una cremallera que se abre en chispas.'},
+ {n:'good_news.jpg',k:'jpg',src:'p/img/goodnews.jpg',w:340,cap:'<b>Good News</b> — revista.',pid:'goodnews',alt:'Portada de la revista Good News.'},
+ {n:'upsi.jpg',k:'jpg',src:'p/img/upsi.jpg',w:340,cap:'Internet.',alt:'Meme de un mono sonriendo incómodo con el texto «upsi».'},
+ {n:'cov_brand.mov',k:'mov',thumb:1,src:'p/v/cov-brand.mp4',poster:'p/img/cov-brand.jpg',cap:'<b>COV brand</b> — vídeo.'},
+ {n:'mira_a_la_derecha.jpg',k:'jpg',src:'p/img/mira_a_la_derecha.jpg',w:300,cap:'Internet.',alt:'Imagen negra con el texto «Mira a la derecha», una flecha que señala a la izquierda y la frase «Las imágenes tienen más poder que los textos».'},
+ {n:'3d_animation.webloc',k:'web',url:'https://www.behance.net/gallery/143039789/3d-animation',label:'3D animation — Behance'},
+ {n:'poster_i_never_finished.ai',k:'ai',msg:'It was never finished.'},
+ {n:'random_test_final_FINAL.psd',k:'psd',msg:'This is not the final version. Neither is the next one.'}
+];
+const CAPT={'creación con IA.':['creació amb IA.','made with AI.'],'Processing. Mueve el cursor por encima.':['Processing. Mou el cursor per sobre.','Processing. Move the cursor over it.'],
+ 'la controladora: una esfera luminosa con Arduino.':['la controladora: una esfera lluminosa amb Arduino.','the controller: a glowing sphere with Arduino.'],'la controladora, en rojo.':['la controladora, en vermell.','the controller, in red.'],
+ 'pruebas de estrellas.':['proves d’estrelles.','star tests.'],'del proceso.':['del procés.','from the process.'],'guante impreso en 3D.':['guant imprès en 3D.','3D-printed glove.'],
+ 'el código que mantiene la tensión.':['el codi que manté la tensió.','the code that holds the tension.'],'en plató.':['al plató.','on set.'],'rodaje con Gravem.':['rodatge amb Gravem.','shoot with Gravem.'],
+ 'cartel de combate.':['cartell de combat.','fight card.'],'cartel de evento.':['cartell d’esdeveniment.','event poster.'],'Pica Pica, versión verde.':['Pica Pica, versió verda.','Pica Pica, green version.'],
+ 'revista.':['revista.','magazine.'],'vídeo.':['vídeo.','video.']};
+const capL=c=>{if(lang==='es')return c;const i=c.indexOf(' — '),k=i<0?c:c.slice(i+3),t=CAPT[k];return t?(i<0?'':c.slice(0,i+3))+t[lang==='ca'?0:1]:c};
+const pgEl=$('#pg'),pgField=$('#pgfield');let pgBuilt=false,pgMode='mess';
+const pgThumb=f=>'p/pt/'+f.n.replace(/\.\w+$/,'')+'.jpg';
+function pgOpen(f){
+  if(f.k==='jpg')return win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:f.w||500,x:.5,y:.46,html:`<img src="${f.src}" alt="${esc(f.alt||'')}"><p>${capL(f.cap)}${f.pid?`<button type="button" class="btn" data-p="${f.pid}">OPEN PROJECT</button>`:''}</p>`});
+  if(f.k==='mov'){const fresh=!document.getElementById('w-pf-'+f.n);
+    const el=win({id:'w-pf-'+f.n,title:f.n,cls:'pv',w:320,x:.5,y:.46,html:`<video src="${f.src}" poster="${f.poster}" controls playsinline preload="none" aria-label="${esc(f.n)}"></video><p>${capL(f.cap)}</p>`});
+    if(fresh)$('video',el).addEventListener('play',()=>{if(sp&&playing)try{sp.pause()}catch(_){}});return el}
+  if(f.k==='web')return alertWin({id:'w-pf-web',mark:'↗',title:f.label,text:`<a href="${f.url}" target="_blank" rel="noopener">${f.url.replace('https://www.','')}</a>`,buttons:[{label:'CLOSE',pri:1}]});
+  if(f.k==='pde'){const fresh=!document.getElementById('w-pf-sk');
+    const el=win({id:'w-pf-sk',title:f.n,cls:'pv',w:420,x:.5,y:.46,html:`<div class="sk-win"><canvas width="600" height="600" aria-label="Mosaico interactivo: mueve el cursor para cambiar el tamaño de los rectángulos"></canvas><div class="sk-pick">${[1,2,3].map(i=>`<button type="button" data-n="${i}" aria-pressed="${i===1}" aria-label="Imagen ${i}"><img src="p/img/sk-${i}.jpg" alt=""></button>`).join('')}</div></div><p>${capL(f.cap)}<button type="button" class="btn" data-p="${f.pid}">OPEN PROJECT</button></p>`});
+    if(fresh)mosaic(el);return el}
+  return alertWin({id:'w-pf-no',mark:'!',title:`“${f.n}” can’t be opened.`,text:f.msg,buttons:[{label:'OK',pri:1}]});
+}
+/* the Processing sketch again, inside its own window */
+function mosaic(el){const c=$('canvas',el),g=c.getContext('2d');let data=null;
+  const draw=(xs,ys)=>{if(!data)return;g.putImageData(data,0,0);const d=data.data;for(let i=0;i<600;i+=xs)for(let j=0;j<600;j+=ys){const k=(j*600+i)*4;g.fillStyle=`rgb(${d[k]},${d[k+1]},${d[k+2]})`;g.fillRect(i,j,xs,ys)}};
+  const load=n=>{$$('[data-n]',el).forEach(b=>b.setAttribute('aria-pressed',+b.dataset.n===n));const im=new Image();im.onload=()=>{g.drawImage(im,0,0,600,600);try{data=g.getImageData(0,0,600,600);draw(15,15)}catch(_){data=null}};im.src='p/img/sk-'+n+'.jpg'};
+  el.addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(b)load(+b.dataset.n)});
+  c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect(),m=v=>Math.max(2,Math.min(60,Math.floor(2+v*58)));draw(m((e.clientX-r.left)/r.width),m((e.clientY-r.top)/r.height))});
+  load(1)}
+/* where each file sits: a grid, plus a fixed amount of carelessness per file in MESS */
+function pgLayout(){
+  const W=pgField.clientWidth,cw=W<520?112:150,ch=W<520?128:142,cols=Math.max(2,Math.floor(W/cw)),gx=(W-cols*cw)/Math.max(1,cols-1),j=W<520?10:34;
+  const order=FILES.map((f,i)=>i);
+  if(pgMode==='name')order.sort((a,b)=>FILES[a].n.localeCompare(FILES[b].n));
+  if(pgMode==='kind')order.sort((a,b)=>FILES[a].n.split('.').pop().localeCompare(FILES[b].n.split('.').pop())||FILES[a].n.localeCompare(FILES[b].n));
+  order.forEach((fi,slot)=>{const el=pgField.children[fi],col=slot%cols,row=Math.floor(slot/cols);
+    const r1=Math.sin(fi*12.9898)*43758.5453,r2=Math.sin(fi*78.233)*12543.123,dx=pgMode==='mess'?((r1-Math.floor(r1))-.5)*2*j:0,dy=pgMode==='mess'?((r2-Math.floor(r2))-.5)*2*j:0;
+    const x=Math.max(0,Math.min(W-118,col*(cw+gx)+(cw-118)/2+dx)),y=Math.max(0,row*ch+j+dy);
+    el.style.setProperty('--x',Math.round(x)+'px');el.style.setProperty('--y',Math.round(y)+'px')});
+  pgField.style.height=(Math.ceil(FILES.length/cols)*ch+2*j+40)+'px';
+}
+function pgInit(){
+  if(!pgBuilt){pgBuilt=true;$('#pgcount').textContent=FILES.length+' items';
+    pgField.innerHTML=FILES.map((f,i)=>`<button type="button" class="pf" data-f="${i}">${f.k==='jpg'||f.thumb?`<img src="${pgThumb(f)}" alt="" draggable="false">`:`<i aria-hidden="true">${f.n.split('.').pop().toUpperCase().slice(0,5)}</i>`}<span>${f.n}</span></button>`).join('');
+    $$('.pf',pgField).forEach(el=>{const f=FILES[+el.dataset.f];let down=null,moved=false;
+      el.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,ox:parseFloat(el.style.getPropertyValue('--x'))||0,oy:parseFloat(el.style.getPropertyValue('--y'))||0};moved=false;el.setPointerCapture(e.pointerId)});
+      el.addEventListener('pointermove',e=>{if(!down)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;if(!moved&&Math.hypot(dx,dy)<6)return;moved=true;el.classList.add('drag');
+        el.style.setProperty('--x',Math.max(0,Math.min(pgField.clientWidth-118,down.ox+dx))+'px');el.style.setProperty('--y',Math.max(0,down.oy+dy)+'px')});
+      const up=e=>{if(!down)return;down=null;el.classList.remove('drag');if(!moved&&e.type==='pointerup')pgOpen(f)};
+      el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+      el.addEventListener('click',e=>{if(e.detail===0)pgOpen(f)})});
+    $$('[data-sort]',pgEl).forEach(b=>b.addEventListener('click',()=>{pgMode=b.dataset.sort;$$('[data-sort]',pgEl).forEach(o=>o.setAttribute('aria-pressed',o===b));pgLayout()}));
+    addEventListener('resize',()=>{if(!pgEl.hidden)pgLayout()});
+  }
+  pgLayout();
+}
+
+function setLang(l){if(!UI[l])return;lang=l;try{localStorage.setItem('lang',l)}catch(_){}
+  $$('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===l));wcase.lang=l;wFilt();wRows();
+  if(!work.hidden&&!wcase.hidden)route(here)}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang)});
+setLang(lang);
+OPEN.work=()=>go('work');OPEN.playground=()=>go('playground');
 try{route(location.hash.slice(1))}catch(_){}
 
 /* ───────── entrance: sound only if asked ───────── */
