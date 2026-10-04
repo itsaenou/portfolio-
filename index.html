@@ -576,6 +576,8 @@ document.addEventListener('pointerdown',e=>{if(!e.target.closest('.dot'))hideDot
    (previews that block other sites) the player falls back to a plain link to the playlist. */
 const PLAYLIST='1vwP2i7MblzSlrk4iXS9m0';
 const fm=$('#fm');let sp=null,spState='loading',playing=false,wantPlay=false;
+/* one song at a time: when Spotify would jump to the next song by itself, we pause and let the visitor choose */
+let lastURI='',lastPos=0,lastDur=0,wasPaused=true,cut=0,ended=false,allowNext=false,touch=0;
 const mmss=ms=>{const s=Math.max(0,Math.floor(ms/1000));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 function fmUI(pos,dur){fm.classList.toggle('playing',playing);
   $('#fmplay').setAttribute('aria-label',playing?'Pause':'Play');
@@ -587,11 +589,32 @@ function fmOff(){if(spState==='ready')return;spState='off';playing=false;fmOpen(
 function fmOn(){spState='ready';$('#fmplay').hidden=false;$('#fmplay').disabled=false;$('#fmlink').hidden=true;$('#fmpick').hidden=false;$('#fmname').textContent="ainoa's playlist";fmUI();
   if(wantPlay){wantPlay=false;try{sp.play()}catch(_){}}}
 function play(){if(spState==='ready'){if(!playing)try{sp.play()}catch(_){}}else if(spState==='loading')wantPlay=true;else $('#fmlink').focus()}
-$('#fmplay').addEventListener('click',()=>{if(sp)try{sp.togglePlay()}catch(_){}});
+$('#fmplay').addEventListener('click',()=>{if(!sp)return;
+  if(ended){allowNext=lastPos>2000;ended=false;$('#fmname').textContent="ainoa's playlist"}
+  try{sp.togglePlay()}catch(_){}});
+/* a click inside Spotify's list takes focus into its frame: that is how we know the visitor chose a song */
+addEventListener('blur',()=>{const a=document.activeElement;if(a&&a.tagName==='IFRAME'&&fm.contains(a)){touch=Date.now();setTimeout(()=>{try{window.focus()}catch(_){}},400)}});
+function fmStop(){ended=true;playing=false;try{sp.pause()}catch(_){}fmOpen(true);$('#fmname').textContent='choose the next song'}
+function fmUpdate(d){
+  const uri=d.playingURI||'',pos=d.position||0,dur=d.duration||0;let stop=false;
+  if(lastURI&&uri&&uri!==lastURI){
+    const byUser=Date.now()-touch<2500||allowNext||wasPaused;allowNext=false;
+    const fullEnd=lastDur>60000&&lastPos>=lastDur-2500;           /* a whole song finished: keep going */
+    const midway=cut>0&&Math.abs(lastPos-cut)>2500&&lastPos<lastDur-2500; /* changed far from where previews end: a choice */
+    if(!byUser&&!fullEnd&&!midway){if(lastPos>3000&&lastPos<lastDur-2500)cut=lastPos;stop=true}
+    else{ended=false;$('#fmname').textContent="ainoa's playlist"}
+  }else if(!d.isPaused&&!ended&&!allowNext){
+    const lim=dur&&dur<=60000?dur:(cut&&dur>cut+5000?cut:0);       /* where this preview will end */
+    if(lim&&pos>=lim-1200)stop=true;
+  }
+  lastURI=uri||lastURI;lastPos=pos;lastDur=dur;wasPaused=!!d.isPaused;
+  if(stop){fmStop();wasPaused=true}else playing=!d.isPaused;
+  fmUI(pos,dur);
+}
 $('#fmpick').addEventListener('click',()=>fmOpen(!fm.classList.contains('open')));
 window.onSpotifyIframeApiReady=api=>{try{api.createController($('#fmembed'),{uri:'spotify:playlist:'+PLAYLIST,width:'100%',height:352},c=>{sp=c;
   c.addListener('ready',fmOn);
-  c.addListener('playback_update',e=>{const d=(e&&e.data)||{};if(spState!=='ready')fmOn();playing=!d.isPaused;fmUI(d.position,d.duration)})})}catch(_){fmOff()}};
+  c.addListener('playback_update',e=>{if(spState!=='ready')fmOn();fmUpdate((e&&e.data)||{})})})}catch(_){fmOff()}};
 (function(){const t=document.createElement('script');t.src='https://open.spotify.com/embed/iframe-api/v1';t.async=true;t.onerror=fmOff;document.head.appendChild(t);
   setTimeout(()=>{if(spState==='loading')fmOff()},9000)})();
 fmUI();
