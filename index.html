@@ -9,7 +9,13 @@
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=4">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=4">
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
-<title>Ainoa's Personal Internet</title>
+<title>Ainoa López Martín · Art Direction &amp; Interactive Design</title>
+<meta name="description" content="Ainoa López Martín, multidisciplinary designer in Barcelona: art direction, brand experiences and interactive design.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ainoa López Martín · Art Direction &amp; Interactive Design">
+<meta property="og:description" content="Art direction, brand experiences and interactive design. Barcelona.">
+<meta property="og:url" content="https://itsaenou.github.io/portfolio-/">
+<meta property="og:image" content="https://itsaenou.github.io/portfolio-/a/ainoa.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&family=Reenie+Beanie&display=swap">
 <style>
 /* Layout: one quiet desktop. Small type pinned to the corners, the portrait floating
@@ -384,7 +390,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 <main class="desk" id="desk">
   <header class="id">
     <b>AINOA LÓPEZ MARTÍN</b>
-    Multidisciplinary Designer<br>&amp; Creative Technologist
+    Multidisciplinary Designer<br>Art Direction · Brand Experience<br>&amp; Interactive Design
   </header>
 
   <div class="meta">
@@ -760,6 +766,17 @@ const DIM={'lineapelle-1':[1200,1600],'lineapelle-2':[2048,1536],'afl10-a':[1754
 for(let i=8;i<=15;i++)DIM['anemoia-'+String(i).padStart(2,'0')]=[1024,1024];
 const an=(a,b)=>Array.from({length:b-a+1},(_,i)=>'anemoia-'+String(a+i).padStart(2,'0'));
 const PROJ=[
+ {id:'lineapelle',n:'Lineapelle · Stand',y:'2026',th:1,acc:'#ff2a1a',
+  s:'Diseño del stand',tags:'Diseño gráfico · Project management',
+  d:'Diseño del stand para Lineapelle: distribución del espacio, mobiliario, medidas y colores.',
+  w:'Mi parte: coordinación, creación y colocación del stand, compra y transporte de muebles, medidas, colores y formato.',
+  media:[{t:'grid',c:2,solo:1,im:['lineapelle-1','lineapelle-2']},{t:'doc',f:'lin',n:9,r:'3508/2481',label:'Guía técnica de montaje'}]},
+ {id:'campanas',n:'Rubí Zippers · Campañas',y:'2026',th:1,acc:'#ff2a1a',
+  s:'Creación y dirección de campañas',
+  tags:'Dirección de arte · Diseño gráfico',
+  d:'Creación y dirección de campañas para Rubí Zippers, producidas junto a Gravem: concepto, dirección de arte y coordinación del rodaje en plató.',
+  w:'Con Gravem',
+  media:[{t:'video',src:'p/v/gravem-making.mp4',poster:'p/img/gravem-poster.jpg'},{t:'grid',c:2,im:['gravem-set','gravem-set2']},{t:'fit',im:['gravem-making']}]},
  {id:'groc',n:'GROC',y:'ELISAVA',th:1,tone:'dark',acc:'#ffe500',
   s:'Un videojuego y una controladora para entender la ansiedad',
   tags:'Branding · Diseño gráfico · Diseño interactivo · Creative Technology · 3D & prototipado · Fotografía & audiovisual',
@@ -778,6 +795,22 @@ const PROJ=[
   d:'Adrift es un juego de simulación y supervivencia para jugadores que buscan aislamiento y tensión: sobrevivir en mar abierto significa gestionar el hambre, la sed, las averías del equipo y el peso psicológico de la soledad total mientras intentas pescar 100 peces antes de volver a puerto.',
   w:'Con Lucas Béjar y Kristyna Borrell. Mi parte: la identidad visual del videojuego: gráficos, estética, tipografía y elementos visuales.',
   media:[{t:'doc',f:'adr',n:34,r:'3508/2481',label:'Pitch deck'},{t:'grid',c:2,src:['p/adr/p-26.jpg','p/adr/p-27.jpg','p/adr/p-28.jpg','p/adr/p-29.jpg'],dim:[3508,2481]}]},
+ {id:'video-da',n:'Vídeo · Dirección de arte',y:'2026',kind:'YouTube',acc:'#ff2a1a',
+  s:'Dirección de arte y coordinación',
+  tags:'Dirección de arte · Diseño gráfico',
+  w:'Dirección de arte y coordinación: Ainoa López',
+  media:[{t:'link',url:'https://youtu.be/4oAllFvJhE0',label:'Ver el vídeo en YouTube'}]},
+ {id:'merch',n:'Rubí Zippers · Merchandising',y:'2026',th:1,acc:'#ff2a1a',
+  s:'Bolsas, sudaderas y libretas del centenario',tags:'Diseño gráfico',
+  d:'Merchandising para el centenario de Rubí Zippers (1926-2026): bolsas shopper (una con el “100” y otra con una ilustración de Cremalleras Relámpago que recuerda los inicios de la marca), sudaderas con el logotipo y un gran “100” en la espalda, y libretas rojas con el logotipo en relieve y una colección de tiradores de cremallera.',
+  w:'Diseño en Rubí Zippers',
+  media:[{t:'grid',c:2,im:['bolsa-1','bolsa-2']},{t:'full',im:['libreta']},{t:'grid',c:2,im:['merch-1','merch-2']},{t:'grid',c:2,im:['shopper-1','shopper-2']}]},
+ {id:'web',n:'Rubí Zippers · Web',y:'2026',kind:'Web',acc:'#ff2a1a',
+  s:'Sitio web corporativo',
+  tags:'Dirección de arte · Diseño UX/UI · Diseño interactivo',
+  d:'Web corporativa de Rubí Zippers, fabricante de cremalleras de Barcelona desde 1926: colecciones, cursores, sostenibilidad y recursos técnicos descargables para moda, denim, outdoor y marroquinería de lujo.',
+  w:'Con Mitto Agency',
+  media:[{t:'link',url:'https://rubizippers.com/es',label:'Ver la web'}]},
  {id:'telegrafo',n:'Telégrafo Óptico',y:'2025',th:1,acc:'#c9f04f',
   s:'Proyecto de investigación · Teorías críticas, ELISAVA',
   tags:'3D & prototipado · Diseño gráfico',
@@ -790,35 +823,11 @@ const PROJ=[
   d:'Anemoia: la nostalgia por un tiempo, lugar o época que nunca se ha vivido. Un proyecto de visuales generativos con IA que traduce esa emoción compleja a los cinco sentidos (ver, oír, oler, tocar y saborear) como instalaciones imaginadas, cada una con su concepto y su prompt.',
   w:'Con Mariana, Camila, Pol y Jan',
   media:[{t:'full',im:['anemoia-01']},{t:'grid',c:2,im:an(2,7)},{t:'grid',c:4,im:an(8,15)}]},
- {id:'afl',n:'AFL · Estudio Bengala',y:'2023',th:1,tone:'dark',acc:'#3aa0ff',
-  s:'Carteles para la liga AFL',
-  tags:'Diseño gráfico · Dirección de arte',
-  d:'Carteles de combate y cartel de evento para la AFL (Ansgar Fighting League, Prospect Series) en Barcelona: AFL 10 (22.04.23) y AFL 12 (01.07.23). Trabajo realizado con Estudio Bengala.',
-  media:[{t:'grid',c:2,im:['afl10-a','afl10-b']},{t:'fit',im:['afl12']}]},
- {id:'fauces',n:'Fauces · Manual de marca',y:'2023',th:1,
-  s:'Identidad y manual de marca',
-  tags:'Diseño gráfico · Creative Technology',
-  d:'Manual de normas y usos de la marca gráfica: perfil, origen y construcción del logotipo, versiones, tipografías, cromatismo, recursos, layout y aplicaciones (35 páginas).',
-  media:[{t:'doc',f:'fau',n:35,r:'1600/1132',label:'Manual de marca'}]},
- {id:'ipsom',n:'Ipsom · Presentación',y:'2023',th:1,acc:'#b5cc18',
-  s:'Presentación de gestión de ayudas',
-  tags:'Diseño gráfico · Fotografía & audiovisual',
-  d:'Presentación corporativa de Ipsom, consultoría especializada en gestión de ayudas y subvenciones: quiénes son, alcance del servicio y cómo trabajan (11 páginas).',
-  media:[{t:'doc',f:'ips',n:11,r:'1600/1132',label:'Proyecto completo'}]},
- {id:'ensporten',n:'Ensporten',y:'2022',th:1,tone:'dark',acc:'#3fe0a0',
-  s:'App de reparto 100% sostenible',
-  tags:'Diseño UX/UI · Diseño interactivo · Diseño gráfico · 3D & prototipado',
-  d:'Ensporten es una app de paquetería ecológica instantánea para el comercio local: ayuda al pequeño comercio a competir con las grandes superficies. Proyecto del CFGS de Interactiva 2022 (EAD Sant Cugat): identidad de marca, manual, diseño de la app, animaciones y prototipo con Adobe Illustrator, After Effects y Figma.',
-  links:[['https://www.figma.com/design/JSFEu5zvDz93GzcIJvU0r6/Untitled?node-id=2-123&t=pxMdp7MQM858koJt-1','Abrir el prototipo en Figma']],
-  media:[{t:'grid',c:2,im:['ensporten-info','ensporten-ig']},{t:'doc',f:'ensp',n:24,r:'1600/1132',label:'Manual de marca'}]},
- {id:'emotion',n:'Emotion',y:'2023',th:1,acc:'#ff7a3c',
-  s:'Identidad para un centro de arteterapia y musicoterapia',
-  tags:'Diseño gráfico · Creative Technology',
-  d:'Emotion es un centro de arteterapia y musicoterapia en Sant Cugat del Vallès. Proyecto integrado de 2º de Gráfica Impresa (EAD Sant Cugat, 2022-2023): investigación, naming, logotipo e isotipo, colores y tipografías corporativas, elementos gráficos, campaña y merchandising.',
-  media:[{t:'full',src:['p/emo/p-33.jpg'],dim:[1600,1132]},{t:'doc',f:'emo',n:33,r:'1600/1132',label:'Proyecto completo'},{t:'doc',f:'emom',n:24,r:'1600/1132',label:'Manual de marca'}]},
- {id:'goodnews',n:'Good News · Revista',y:'2022',th:1,
-  s:'Diseño editorial',tags:'Diseño gráfico',
-  media:[{t:'fit',im:['goodnews']}]},
+ {id:'movimiento',n:'Imagen en movimiento',y:'2025',th:1,acc:'#7bff00',
+  s:'Animación con código · Processing',
+  tags:'Creative Technology · Diseño interactivo',
+  d:'Ejercicio de animación con código en Processing: la imagen se convierte en un mosaico de píxeles cuyo tamaño controla el ratón. El eje X cambia el ancho y el eje Y el alto de cada rectángulo, que toma el color de la imagen original. Prueba con las tres imágenes.',
+  media:[{t:'sketch'}]},
  {id:'polurbano',n:'Pol Urbano · Fotografía',y:'2026',th:1,acc:'#ff5a2a',
   s:'Sesión de fotos para el artista @pol.urbano',
   tags:'Fotografía & audiovisual',
@@ -826,61 +835,60 @@ const PROJ=[
   w:'Fotografía: Ainoa López',
   links:[['https://www.instagram.com/p/DWblLruDdG1/','Ver en Instagram'],['https://www.instagram.com/p/DYPwa76gt_E/','Instagram · 2'],['https://www.instagram.com/p/DYnfZptgETs/','Instagram · 3']],
   media:[{t:'fit',im:['polurbano-set']}]},
- {id:'movimiento',n:'Imagen en movimiento',y:'2025',th:1,acc:'#7bff00',
-  s:'Animación con código · Processing',
-  tags:'Creative Technology · Diseño interactivo',
-  d:'Ejercicio de animación con código en Processing: la imagen se convierte en un mosaico de píxeles cuyo tamaño controla el ratón. El eje X cambia el ancho y el eje Y el alto de cada rectángulo, que toma el color de la imagen original. Prueba con las tres imágenes.',
-  media:[{t:'sketch'}]},
- {id:'lineapelle',n:'Lineapelle · Stand',y:'2026',th:1,acc:'#ff2a1a',
-  s:'Diseño del stand',tags:'Diseño gráfico · Project management',
-  d:'Diseño del stand para Lineapelle: distribución del espacio, mobiliario, medidas y colores.',
-  w:'Mi parte: coordinación, creación y colocación del stand, compra y transporte de muebles, medidas, colores y formato.',
-  media:[{t:'grid',c:2,solo:1,im:['lineapelle-1','lineapelle-2']},{t:'doc',f:'lin',n:9,r:'3508/2481',label:'Guía técnica de montaje'}]},
- {id:'campanas',n:'Rubí Zippers · Campañas',y:'2026',th:1,acc:'#ff2a1a',
-  s:'Creación y dirección de campañas',
-  tags:'Dirección de arte · Diseño gráfico',
-  d:'Creación y dirección de campañas para Rubí Zippers, producidas junto a Gravem: concepto, dirección de arte y coordinación del rodaje en plató.',
-  w:'Con Gravem',
-  media:[{t:'video',src:'p/v/gravem-making.mp4',poster:'p/img/gravem-poster.jpg'},{t:'grid',c:2,im:['gravem-set','gravem-set2']},{t:'fit',im:['gravem-making']}]},
- {id:'video-da',n:'Vídeo · Dirección de arte',y:'2026',kind:'YouTube',acc:'#ff2a1a',
-  s:'Dirección de arte y coordinación',
-  tags:'Dirección de arte · Diseño gráfico',
-  w:'Dirección de arte y coordinación: Ainoa López',
-  media:[{t:'link',url:'https://youtu.be/4oAllFvJhE0',label:'Ver el vídeo en YouTube'}]},
- {id:'web',n:'Rubí Zippers · Web',y:'2026',kind:'Web',acc:'#ff2a1a',
-  s:'Sitio web corporativo',
-  tags:'Dirección de arte · Diseño UX/UI · Diseño interactivo',
-  d:'Web corporativa de Rubí Zippers, fabricante de cremalleras de Barcelona desde 1926: colecciones, cursores, sostenibilidad y recursos técnicos descargables para moda, denim, outdoor y marroquinería de lujo.',
-  w:'Con Mitto Agency',
-  media:[{t:'link',url:'https://rubizippers.com/es',label:'Ver la web'}]},
- {id:'picapica',n:'Rubí Zippers · Pica Pica',y:'2025',th:1,acc:'#ff2a1a',
-  s:'Cartel-invitación de la fiesta de Navidad',tags:'Diseño gráfico',
-  d:'Cartel-invitación del “Pica Pica” de Rubí Zippers: viernes 19 de diciembre a las 14:30h. Dos versiones: una roja con ilustraciones a línea de platos y tomates, y otra verde navideña.',
-  w:'Diseño en Rubí Zippers',
-  media:[{t:'grid',c:2,solo:1,im:['picapica','picapica2']}]},
  {id:'santjoan',n:'Rubí Zippers · Sant Joan',y:'2026',th:1,acc:'#ff8a3c',
   s:'Cartel de Sant Joan',tags:'Diseño gráfico',
   d:'Cartel de la verbena de Sant Joan para Rubí Zippers: una cremallera que se abre en una chispa de petardo, con el lema “La guspira que ens uneix”.',
   w:'Diseño en Rubí Zippers',
   media:[{t:'fit',im:['santjoan']}]},
- {id:'cien',n:'Rubí Zippers · 100 años',y:'2026',acc:'#ff2a1a',
-  s:'Logo del centenario',tags:'Diseño gráfico · Creative Technology',
+ {id:'picapica',n:'Rubí Zippers · Pica Pica',y:'2025',th:1,acc:'#ff2a1a',
+  s:'Cartel-invitación de la fiesta de Navidad',tags:'Diseño gráfico',
+  d:'Cartel-invitación del “Pica Pica” de Rubí Zippers: viernes 19 de diciembre a las 14:30h. Dos versiones: una roja con ilustraciones a línea de platos y tomates, y otra verde navideña.',
   w:'Diseño en Rubí Zippers',
-  media:[{t:'none'}]},
- {id:'merch',n:'Rubí Zippers · Merchandising',y:'2026',th:1,acc:'#ff2a1a',
-  s:'Bolsas, sudaderas y libretas del centenario',tags:'Diseño gráfico',
-  d:'Merchandising para el centenario de Rubí Zippers (1926-2026): bolsas shopper (una con el “100” y otra con una ilustración de Cremalleras Relámpago que recuerda los inicios de la marca), sudaderas con el logotipo y un gran “100” en la espalda, y libretas rojas con el logotipo en relieve y una colección de tiradores de cremallera.',
-  w:'Diseño en Rubí Zippers',
-  media:[{t:'grid',c:2,im:['bolsa-1','bolsa-2']},{t:'full',im:['libreta']},{t:'grid',c:2,im:['merch-1','merch-2']},{t:'grid',c:2,im:['shopper-1','shopper-2']}]},
+  media:[{t:'grid',c:2,solo:1,im:['picapica','picapica2']}]},
+ {id:'afl',n:'AFL · Estudio Bengala',y:'2023',th:1,tone:'dark',acc:'#3aa0ff',
+  s:'Carteles para la liga AFL',
+  tags:'Diseño gráfico · Dirección de arte',
+  d:'Carteles de combate y cartel de evento para la AFL (Ansgar Fighting League, Prospect Series) en Barcelona: AFL 10 (22.04.23) y AFL 12 (01.07.23). Trabajo realizado con Estudio Bengala.',
+  media:[{t:'grid',c:2,im:['afl10-a','afl10-b']},{t:'fit',im:['afl12']}]},
+ {id:'emotion',n:'Emotion',y:'2023',th:1,acc:'#ff7a3c',
+  s:'Identidad para un centro de arteterapia y musicoterapia',
+  tags:'Diseño gráfico',
+  d:'Emotion es un centro de arteterapia y musicoterapia en Sant Cugat del Vallès. Proyecto integrado de 2º de Gráfica Impresa (EAD Sant Cugat, 2022-2023): investigación, naming, logotipo e isotipo, colores y tipografías corporativas, elementos gráficos, campaña y merchandising.',
+  media:[{t:'full',src:['p/emo/p-33.jpg'],dim:[1600,1132]},{t:'doc',f:'emo',n:33,r:'1600/1132',label:'Proyecto completo'},{t:'doc',f:'emom',n:24,r:'1600/1132',label:'Manual de marca'}]},
+ {id:'ensporten',n:'Ensporten',y:'2022',th:1,tone:'dark',acc:'#3fe0a0',
+  s:'App de reparto 100% sostenible',
+  tags:'Diseño UX/UI · Diseño interactivo · Diseño gráfico · 3D & prototipado',
+  d:'Ensporten es una app de paquetería ecológica instantánea para el comercio local: ayuda al pequeño comercio a competir con las grandes superficies. Proyecto del CFGS de Interactiva 2022 (EAD Sant Cugat): identidad de marca, manual, diseño de la app, animaciones y prototipo con Adobe Illustrator, After Effects y Figma.',
+  links:[['https://www.figma.com/design/JSFEu5zvDz93GzcIJvU0r6/Untitled?node-id=2-123&t=pxMdp7MQM858koJt-1','Abrir el prototipo en Figma']],
+  media:[{t:'grid',c:2,im:['ensporten-info','ensporten-ig']},{t:'doc',f:'ensp',n:24,r:'1600/1132',label:'Manual de marca'}]},
+ {id:'fauces',n:'Fauces · Manual de marca',y:'2023',th:1,
+  s:'Identidad y manual de marca',
+  tags:'Diseño gráfico',
+  d:'Manual de normas y usos de la marca gráfica: perfil, origen y construcción del logotipo, versiones, tipografías, cromatismo, recursos, layout y aplicaciones (35 páginas).',
+  media:[{t:'doc',f:'fau',n:35,r:'1600/1132',label:'Manual de marca'}]},
+ {id:'ipsom',n:'Ipsom · Presentación',y:'2023',th:1,acc:'#b5cc18',
+  s:'Presentación de gestión de ayudas',
+  tags:'Diseño gráfico · Fotografía & audiovisual',
+  d:'Presentación corporativa de Ipsom, consultoría especializada en gestión de ayudas y subvenciones: quiénes son, alcance del servicio y cómo trabajan (11 páginas).',
+  media:[{t:'doc',f:'ips',n:11,r:'1600/1132',label:'Proyecto completo'}]},
+ {id:'goodnews',n:'Good News · Revista',y:'2022',th:1,
+  s:'Diseño editorial',tags:'Diseño gráfico',
+  media:[{t:'fit',im:['goodnews']}]},
  {id:'ovalo',n:'Óvalo · Manual de marca',y:'2024',kind:'Behance',
-  s:'Manual de marca',tags:'Diseño gráfico · Creative Technology',
+  s:'Manual de marca',tags:'Diseño gráfico',
   media:[{t:'link',url:'https://www.behance.net/gallery/201585981/OVALO-MANUAL-DE-MARCA',label:'Ver en Behance'}]},
  {id:'afloral',n:'A.Floral · Manual de marca',y:'2024',kind:'Behance',
-  s:'Manual de marca',tags:'Diseño gráfico · Creative Technology',
+  s:'Manual de marca',tags:'Diseño gráfico',
   media:[{t:'link',url:'https://www.behance.net/gallery/201448373/AFLORAL-MANUAL-DE-MARCA',label:'Ver en Behance'}]},
  {id:'3d',n:'3D animation',y:'2022',kind:'Behance',
   s:'Animación 3D',tags:'3D & prototipado',
   media:[{t:'link',url:'https://www.behance.net/gallery/143039789/3d-animation',label:'Ver en Behance'}]}
+ /* hidden until the centenary logo images are added:
+  {id:'cien',n:'Rubí Zippers · 100 años',y:'2026',acc:'#ff2a1a',
+  s:'Logo del centenario',tags:'Diseño gráfico',
+  w:'Diseño en Rubí Zippers',
+  media:[{t:'none'}]}
+  */
 ];
 const PDE=`PImage img;
 int xstep = 15;
@@ -1127,6 +1135,7 @@ try{route(location.hash.slice(1))}catch(_){}
 
 /* ───────── entrance: sound only if asked ───────── */
 (function gate(){
+  if(location.hash.length>1)return; /* someone sent straight to a project or section skips the sound question */
   const s=document.createElement('div');s.id='scrim';document.body.appendChild(s);
   alertWin({id:'w-gate',mark:'♪',w:340,y:.44,title:'This place has sound.',text:'AINOA.FM plays Ainoa’s Spotify playlist. Nothing plays unless you ask.',
     buttons:[{label:'ENTER QUIETLY'},{label:'ENTER WITH SOUND',pri:1,act:()=>{play()}}]});
