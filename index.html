@@ -571,7 +571,7 @@ const OPEN={
  work:()=>alertWin({id:'w-work',title:'“WORK” is still empty.',text:'Version B starts with the home. The project index comes next.',buttons:[{label:'OK',pri:1}]}),
  playground:()=>alertWin({id:'w-play',title:'“PLAYGROUND” is still empty.',text:'A folder full of things goes here. Not built yet.',buttons:[{label:'OK',pri:1}]}),
  contact:()=>alertWin({id:'w-contact',mark:'@',w:350,title:'Say hello.',
-   text:`<span class="sel" id="mail">${EMAIL}</span><br><a href="https://instagram.com/aenou_" target="_blank" rel="noopener">Instagram @aenou_</a><br><a href="https://www.linkedin.com/in/wavingyourmind" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://www.behance.net/wavingmind" target="_blank" rel="noopener">Behance</a>`,
+   text:`<span class="sel" id="mail">${EMAIL}</span><br><a href="https://instagram.com/aenou_" target="_blank" rel="noopener">Instagram @aenou_</a><br><a href="https://www.linkedin.com/in/aenou/" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://www.behance.net/wavingmind" target="_blank" rel="noopener">Behance</a>`,
    buttons:[{label:'CLOSE'},{label:'COPY EMAIL',pri:1,act:b=>{const ok=()=>{b.textContent='COPIED'};
      const sel=()=>{const r=document.createRange();r.selectNodeContents($('#mail'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='SELECTED'};
      try{navigator.clipboard.writeText(EMAIL).then(ok,sel)}catch(_){sel()}return false}}]}),
