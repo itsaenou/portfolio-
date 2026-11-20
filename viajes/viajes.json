@@ -1,3 +1,28 @@
 {
-  "paises": []
+  "paises": [
+    {
+      "pais": "Gibraltar",
+      "cartel": "",
+      "fotos": [],
+      "sitios": []
+    },
+    {
+      "pais": "Reino Unido",
+      "cartel": "",
+      "fotos": [],
+      "sitios": []
+    },
+    {
+      "pais": "Portugal",
+      "cartel": "viajes/portugal/cartel-mwp6btrx.jpg",
+      "fotos": [],
+      "sitios": []
+    },
+    {
+      "pais": "Alemania",
+      "cartel": "",
+      "fotos": [],
+      "sitios": []
+    }
+  ]
 }
