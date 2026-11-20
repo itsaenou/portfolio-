@@ -139,7 +139,6 @@ OPEN.travel=()=>{
     <p class="tve-help">Pulsa un <b>+</b> del mapa para añadir un país, o un cartel para editarlo. Dentro arrastra el cartel y las fotos y escribe tus sitios.</p>
     <div class="tv-top"><input class="tv-q" type="search" placeholder="Busca o añade un país…" aria-label="Busca o añade un país" autocomplete="off" spellcheck="false"></div><p class="tv-msg" aria-live="polite"></p><div class="tv-view"></div>`});
   if(!fresh)return el;
-  const land=`<svg class="tv-land" viewBox="0 0 43.1 38" preserveAspectRatio="none" aria-hidden="true"><path d="${TV_LAND}"/></svg>`;
   const draw=()=>{const q=norm($('.tv-q',el).value);const have=new Set(TRIPS.map(t=>norm(t.pais)));
     const adds=NAMES.filter(n=>!have.has(n)).map(n=>{const[x,y]=tvXY(EU[n][0],EU[n][1]);const hit=q&&(n+'|'+norm(EU[n][2])).includes(q);return `<button type="button" class="tve-add${hit?' hit':''}" data-add="${esc(n)}" style="left:${x}%;top:${y}%" aria-label="Añadir ${esc(n)}" title="Añadir ${esc(n)}">+</button>`}).join('');
     $('.tv-view',el).innerHTML=tvMapHTML(q,adds);
