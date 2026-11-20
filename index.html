@@ -515,7 +515,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <li><button type="button" class="file" data-go="help"><i aria-hidden="true"></i><span>HELP!.rtf</span></button></li>
     <li><button type="button" class="file" data-go="rename"><i aria-hidden="true"></i><span id="jobfile">GRAPHIC DESIGNER</span></button></li>
     <li><button type="button" class="file" data-go="likes"><i aria-hidden="true"></i><span>things_i_like.txt</span></button></li>
-    <li id="travelli" hidden><button type="button" class="file" data-go="travel"><i aria-hidden="true"></i><span>travel_log</span></button></li>
+    <li id="travelli"><button type="button" class="file" data-go="travel"><i aria-hidden="true"></i><span>travel_log</span></button></li>
   </ul>
 </main>
 
@@ -750,9 +750,9 @@ OPEN.likes=()=>{
 /* ───────── travel_log — Europe on grid paper, one poster per country (data: viajes/viajes.json, see viajes/LEEME.md) ───────── */
 const EU={'españa':[40.2,-3.7,'spain|espanya'],'portugal':[39.6,-8,''],'francia':[46.6,2.4,'france|frança'],'andorra':[42.5,1.55,''],'monaco':[43.74,7.42,'mònaco'],'italia':[42.8,12.5,'italy|itàlia'],'san marino':[43.94,12.46,''],'vaticano':[41.9,12.45,'vatican|vaticà'],'malta':[35.9,14.4,''],'suiza':[46.8,8.2,'switzerland|suïssa'],'liechtenstein':[47.16,9.55,''],'austria':[47.6,14.1,'àustria'],'alemania':[51.1,10.4,'germany|alemanya'],'belgica':[50.6,4.6,'belgium|bèlgica'],'paises bajos':[52.2,5.5,'netherlands|holanda|paisos baixos'],'luxemburgo':[49.8,6.1,'luxembourg|luxemburg'],'reino unido':[53.5,-2,'united kingdom|uk|inglaterra|england|escocia|scotland|regne unit|londres'],'irlanda':[53.2,-8,'ireland'],'islandia':[64.9,-18.6,'iceland|islàndia'],'noruega':[61.5,9,'norway'],'suecia':[62,15.5,'sweden|suècia'],'finlandia':[63.5,26,'finland|finlàndia'],'dinamarca':[56,9.5,'denmark'],'estonia':[58.7,25.5,'estònia'],'letonia':[56.9,24.6,'latvia|letònia'],'lituania':[55.3,23.9,'lithuania|lituània'],'polonia':[52.1,19.4,'poland|polònia'],'chequia':[49.8,15.5,'czechia|czech republic|republica checa|txèquia|praga'],'eslovaquia':[48.7,19.7,'slovakia|eslovàquia'],'hungria':[47.2,19.5,'hungary|hongria'],'eslovenia':[46.1,14.8,'slovenia|eslovènia'],'croacia':[45.4,16,'croatia|croàcia'],'bosnia y herzegovina':[44.2,17.8,'bosnia|bòsnia'],'serbia':[44,20.9,'sèrbia'],'montenegro':[42.7,19.3,''],'kosovo':[42.6,20.9,''],'albania':[41.1,20,'albània'],'macedonia del norte':[41.6,21.7,'north macedonia|macedonia'],'grecia':[39.1,22,'greece|grècia'],'bulgaria':[42.7,25.3,'bulgària'],'rumania':[45.9,25,'romania|romania'],'moldavia':[47.2,28.5,'moldova|moldàvia'],'ucrania':[49,31.4,'ukraine|ucraïna'],'bielorrusia':[53.7,28,'belarus|bielorússia'],'turquia':[41,29,'turkey|türkiye|istanbul|turquia'],'chipre':[35,33.2,'cyprus|xipre'],'gibraltar':[36.14,-5.35,'']};
 const norm=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-const TVU={es:{search:'Busca un país…',none:q=>`Todavía no he estado en «${q}».`,photos:'fotos',places:'sitios',more:'Fotos y sitios ↓',ph:'Fotos',recs:'Recomendaciones',maps:'GOOGLE MAPS ↗',open:'OPEN ↗',close:'Cerrar',prev:'País anterior',next:'País siguiente',type:{comer:'Comer',ver:'Ver',dormir:'Dormir',otro:'Otro'}},
- ca:{search:'Busca un país…',none:q=>`Encara no he estat a «${q}».`,photos:'fotos',places:'llocs',more:'Fotos i llocs ↓',ph:'Fotos',recs:'Recomanacions',maps:'GOOGLE MAPS ↗',open:'OPEN ↗',close:'Tancar',prev:'País anterior',next:'País següent',type:{comer:'Menjar',ver:'Veure',dormir:'Dormir',otro:'Altres'}},
- en:{search:'Search a country…',none:q=>`I haven’t been to “${q}” yet.`,photos:'photos',places:'places',more:'Photos & places ↓',ph:'Photos',recs:'Recommendations',maps:'GOOGLE MAPS ↗',open:'OPEN ↗',close:'Close',prev:'Previous country',next:'Next country',type:{comer:'Eat',ver:'See',dormir:'Stay',otro:'Other'}}};
+const TVU={es:{empty:'Primeros viajes en camino: aquí irán apareciendo los países.',search:'Busca un país…',none:q=>`Todavía no he estado en «${q}».`,photos:'fotos',places:'sitios',more:'Fotos y sitios ↓',ph:'Fotos',recs:'Recomendaciones',maps:'GOOGLE MAPS ↗',open:'OPEN ↗',close:'Cerrar',prev:'País anterior',next:'País siguiente',type:{comer:'Comer',ver:'Ver',dormir:'Dormir',otro:'Otro'}},
+ ca:{empty:'Primers viatges en camí: aquí aniran apareixent els països.',search:'Busca un país…',none:q=>`Encara no he estat a «${q}».`,photos:'fotos',places:'llocs',more:'Fotos i llocs ↓',ph:'Fotos',recs:'Recomanacions',maps:'GOOGLE MAPS ↗',open:'OPEN ↗',close:'Tancar',prev:'País anterior',next:'País següent',type:{comer:'Menjar',ver:'Veure',dormir:'Dormir',otro:'Altres'}},
+ en:{empty:'First trips on their way: the countries will appear here.',search:'Search a country…',none:q=>`I haven’t been to “${q}” yet.`,photos:'photos',places:'places',more:'Photos & places ↓',ph:'Photos',recs:'Recommendations',maps:'GOOGLE MAPS ↗',open:'OPEN ↗',close:'Close',prev:'Previous country',next:'Next country',type:{comer:'Eat',ver:'See',dormir:'Stay',otro:'Other'}}};
 const TV=()=>TVU[lang]||TVU.en;
 const tvVid=f=>/\.(mp4|mov|webm|m4v)$/i.test(String(f||''));
 const tvMedia=(f,alt,cls='')=>tvVid(f)?`<video class="${cls}" src="${esc(f)}" controls muted loop playsinline preload="metadata" aria-label="${esc(alt)}"></video>`:`<img class="${cls}" src="${esc(f)}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
@@ -819,7 +819,7 @@ function tvMapHTML(q,extra=''){
     html+=`<button type="button" class="tv-th${dim}" data-i="${i}" style="left:${best[0]}%;top:${best[1]*100/H}%;width:${W}%" aria-label="${esc(t.pais)}" tabindex="-1">${tvPoster(tt)}<i>${esc(t.pais)}${t.cuando?', '+esc(t.cuando):''}</i>${t.fotos.length?`<small>${t.fotos.length} ${TV().photos}</small>`:''}</button>`});
   return `<div class="tv-map">${land}<svg class="tv-ink" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true">${ink}</svg>
     <span class="tv-dot o" style="left:${ox}%;top:${oy*100/H}%"><span>0</span></span>${html}${extra}
-    <p class="tv-cap">${TRIPS.map(t=>esc(t.pais)).join(', ')}</p></div>`}
+    ${TRIPS.length?`<p class="tv-cap">${TRIPS.map(t=>esc(t.pais)).join(', ')}</p>`:''}</div>`}
 function tvHover(root){root.addEventListener('pointerover',e=>{const b=e.target.closest('[data-i]');const i=b?b.dataset.i:null;
   $$('[data-r]',root).forEach(p=>p.classList.toggle('hot',p.dataset.r===i));$$('.tv-dot[data-i],.tv-th',root).forEach(x=>x.classList.toggle('hot',x.dataset.i===i))})}
 OPEN.travel=()=>{
@@ -830,7 +830,7 @@ OPEN.travel=()=>{
     const v=$('.tv-view',el);
     if(view==='map')v.innerHTML=tvMapHTML(q);
     else v.innerHTML=`<div class="tv-grid">${TRIPS.map((t,i)=>`<button type="button" class="tv-cell" data-i="${i}"${hit(t)?'':' hidden'}>${tvPoster(t)}<span>${esc(t.pais)}</span></button>`).join('')}</div>`;
-    $('.tv-msg',el).textContent=q&&!TRIPS.some(hit)?u.none($('.tv-q',el).value.trim()):''};
+    $('.tv-msg',el).textContent=!TRIPS.length?u.empty:q&&!TRIPS.some(hit)?u.none($('.tv-q',el).value.trim()):''};
   el.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b){view=b.dataset.v;$$('[data-v]',el).forEach(x=>x.setAttribute('aria-pressed',x===b));draw();return}
     const p=e.target.closest('[data-i]');if(p)tvOpenFS(+p.dataset.i)});
   tvHover(el);
