@@ -279,6 +279,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .lb-sp .au{writing-mode:vertical-rl;transform:rotate(180deg);font:7px/1 var(--mono);letter-spacing:.08em;opacity:.8;white-space:nowrap;max-height:60px;overflow:hidden}
 .lb-sp .bd{position:absolute;left:0;right:0;height:var(--bh);top:var(--bt);background:var(--a)}
 .lb-sp>span{position:relative}
+.lb-sp.ph{background-size:cover;background-position:center;box-shadow:inset 2px 0 0 rgba(255,255,255,.18),inset -3px 0 0 rgba(0,0,0,.18),0 1px 0 rgba(0,0,0,.25)}
 .lb-sp.film{border-top:6px solid #111110;border-bottom:6px solid #111110}
 .lb-glass{position:absolute;left:10px;right:10px;bottom:6px;height:64px;border-radius:3px;pointer-events:none;
   background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,.05) 40%),color-mix(in srgb,var(--g) 30%,transparent);
@@ -756,7 +757,7 @@ OPEN.likes=()=>{
     $('.lk-f',el).innerHTML=`<button type="button" data-k="" aria-pressed="${!kind}">ALL</button>`+kinds.map(k=>`<button type="button" data-k="${k}" aria-pressed="${kind===k}">${KINDS[k][1]}</button>`).join('');
     $('.lb-shelves',el).innerHTML=kinds.filter(k=>!kind||k===kind).map(k=>{const items=LIKES.map((l,i)=>[l,i]).filter(([l])=>l.k===k);
       return `<section class="lb-shelf" aria-label="${KINDS[k][2]}"><div class="lb-head"><b>${KINDS[k][2]}</b><span>${items.length} ${items.length===1?KINDS[k][3]:KINDS[k][4]}</span><button type="button" data-s="-1" aria-label="Scroll left">‹</button><button type="button" data-s="1" aria-label="Scroll right">›</button></div>
-        <div class="lb-wrap"><div class="lb-row">${items.map(([l,i])=>{const o=lbLook(l);return `<button type="button" class="lb-sp ${l.k}" data-i="${i}" style="${lbVars(o)}" aria-label="${esc(l.t)}${l.by?', '+esc(l.by):''}"><span class="bd"></span><span class="tt">${esc(l.t)}</span></button>`}).join('')}</div><div class="lb-glass" style="--g:${LB_GLASS[k]}"></div></div></section>`}).join('');
+        <div class="lb-wrap"><div class="lb-row">${items.map(([l,i])=>{const o=lbLook(l);return `<button type="button" class="lb-sp ${l.k}${l.lomo?' ph':''}" data-i="${i}" style="${lbVars(o)}${l.lomo?`;--w:${l.lw||40}px;background-image:url(${l.lomo})`:''}" aria-label="${esc(l.t)}${l.by?', '+esc(l.by):''}">${l.lomo?'':`<span class="bd"></span><span class="tt">${esc(l.t)}</span>`}</button>`}).join('')}</div><div class="lb-glass" style="--g:${LB_GLASS[k]}"></div></div></section>`}).join('');
     const n=LIKES.filter(l=>!kind||l.k===kind).length;
     $('.lk-n',el).textContent=n+(n===1?' item':' items')+' · click a spine to open it'};
   el.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){kind=b.dataset.k;draw();return}
