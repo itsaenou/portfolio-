@@ -29,8 +29,39 @@
     {
       "pais": "Portugal",
       "cartel": "viajes/portugal/cartel-mwp6d71b.jpg",
-      "fotos": [],
-      "sitios": []
+      "fotos": [
+        "viajes/portugal/mwp6wjha-01.jpg",
+        "viajes/portugal/mwp6wjha-02.jpg",
+        "viajes/portugal/mwp6wjha-03.mov"
+      ],
+      "sitios": [
+        {
+          "nombre": "brites",
+          "ciudad": "Porto",
+          "tipo": "comer",
+          "direccion": "R. da Constituição 661, 4200-200 Porto, Portugal",
+          "nota": "Cruffins",
+          "media": [
+            "viajes/portugal/sitio-mwp6wjha-1-1.mov",
+            "viajes/portugal/sitio-mwp6wjha-1-2.jpg",
+            "viajes/portugal/sitio-mwp6wjha-1-3.mov"
+          ],
+          "lat": 41.16199,
+          "lon": -8.60609
+        }
+      ],
+      "ciudades": [
+        {
+          "nombre": "Por",
+          "lat": 41.29505,
+          "lon": -7.7467
+        },
+        {
+          "nombre": "Porto",
+          "lat": 41.15022,
+          "lon": -8.61035
+        }
+      ]
     },
     {
       "pais": "Alemania",
