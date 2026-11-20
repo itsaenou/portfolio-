@@ -8,7 +8,21 @@
         "viajes/gibraltar/mwp6kkcj-02.jpg",
         "viajes/gibraltar/mwp6kkcj-03.jpg"
       ],
-      "sitios": []
+      "sitios": [
+        {
+          "nombre": "brites",
+          "ciudad": "oporto",
+          "tipo": "comer",
+          "media": [
+            "viajes/gibraltar/sitio-mwp6o5wc-1-1.jpg"
+          ]
+        }
+      ],
+      "ciudades": [
+        {
+          "nombre": "oporo"
+        }
+      ]
     },
     {
       "pais": "Reino Unido",
@@ -19,17 +33,8 @@
     {
       "pais": "Portugal",
       "cartel": "viajes/portugal/cartel-mwp6d71b.jpg",
-      "fotos": [
-        "viajes/portugal/mwp6m0ey-01.jpg",
-        "viajes/portugal/mwp6m0ey-02.jpg"
-      ],
-      "sitios": [
-        {
-          "nombre": "BRITES",
-          "ciudad": "oporto",
-          "tipo": "comer"
-        }
-      ]
+      "fotos": [],
+      "sitios": []
     },
     {
       "pais": "Alemania",
