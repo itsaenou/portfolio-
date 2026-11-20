@@ -287,6 +287,19 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
   -webkit-backdrop-filter:blur(7px) saturate(1.5);backdrop-filter:blur(7px) saturate(1.5);border:1px solid rgba(255,255,255,.65);box-shadow:0 10px 18px -12px rgba(0,0,0,.45)}
 .lb-glass::before,.lb-glass::after{content:"";position:absolute;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
 .lb-glass::before{left:9px}.lb-glass::after{right:9px}
+.nba{padding:6px 16px 10px;font:11px/1.5 var(--mono)}
+.nba-g{display:flex;flex-wrap:wrap;gap:2px 16px;padding:0 0 10px;margin:0;list-style:none}
+.nba-g li{white-space:nowrap}.nba-g li small{color:var(--wmute)}
+.nba-c{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.nba-c{grid-template-columns:1fr}}
+.nba table{width:100%;border-collapse:collapse;font:inherit}
+.nba caption{text-align:left;font:700 12px var(--sans);padding:0 0 4px}
+.nba th{font-weight:400;color:var(--wmute);text-align:right;padding:0 0 2px}
+.nba td{text-align:right;padding:1px 0;border-top:1px solid #11111014}
+.nba td:nth-child(2),.nba th:nth-child(2){text-align:left;padding-left:6px}
+.nba td:first-child{color:var(--wmute);width:2ch}
+.nba tr.me td{background:var(--yellow);color:#111110}
+.nba-wrap{max-height:52vh;overflow:auto}
 .lk-n{padding:8px 16px;font:10px var(--mono);color:var(--wmute);border-top:1px solid #11111022}
 .lb-co{flex:none;position:relative;width:100px;aspect-ratio:2/3;background:var(--c);color:var(--t);padding:9px 8px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;overflow:hidden;
   box-shadow:inset 3px 0 0 rgba(0,0,0,.12),0 12px 18px -12px rgba(0,0,0,.55);transition:transform .25s cubic-bezier(.2,.8,.2,1);cursor:pointer}
@@ -801,12 +814,29 @@ function likeOpen(l,i){const o=lbLook(l);
   win({id:'w-like-'+i,title:l.t,cls:'pv lkd',w:340,x:.42+(i%4)*.05,y:.5,html:
     `<div class="lb-stage"><div class="lb-cover ${l.k} v${o.v}" style="${lbVars(o)}">${lbFace(l,o)}</div><div class="lb-pocket" aria-hidden="true"></div></div>`+
     `<p class="lb-txt">${l.note?`<q>${esc(l.note)}</q>`:''}<b>${esc(l.t)}</b>${l.by?' — '+esc(l.by):''}<small>${KINDS[l.k][0]}</small>${l.url?`<a class="btn" href="${l.url}" target="_blank" rel="noopener">OPEN ↗</a>`:''}</p>`})}
+/* ✏️ NBA — live standings and today's games (public ESPN feed). Put the team's abbreviation in NBA_TEAM (e.g. 'LAL') to highlight it. */
+const NBA_TEAM='';
+let NBA_P=null;
+const nbaGet=()=>NBA_P||(NBA_P=Promise.all([
+  fetch('https://site.api.espn.com/apis/v2/sports/basketball/nba/standings').then(r=>{if(!r.ok)throw 0;return r.json()}),
+  fetch('https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard').then(r=>r.ok?r.json():null).catch(()=>null)
+]).catch(e=>{NBA_P=null;throw e}));
+function nbaHTML([st,sb]){
+  const stat=(e,n)=>{const x=(e.stats||[]).find(s=>s.name===n);return x?x:{}};
+  const conf=(st.children||[]).map(c=>{const rows=(c.standings&&c.standings.entries||[]).slice().sort((a,b)=>(stat(a,'playoffSeed').value||99)-(stat(b,'playoffSeed').value||99));
+    return `<div class="nba-wrap"><table><caption>${esc(c.name||c.abbreviation||'')}</caption><thead><tr><th>#</th><th>TEAM</th><th>W</th><th>L</th><th>GB</th></tr></thead><tbody>${rows.map((e,i)=>{const t=e.team||{};
+      return `<tr${NBA_TEAM&&t.abbreviation===NBA_TEAM?' class="me"':''}><td>${i+1}</td><td>${esc(t.shortDisplayName||t.displayName||'')}</td><td>${stat(e,'wins').displayValue??''}</td><td>${stat(e,'losses').displayValue??''}</td><td>${esc(stat(e,'gamesBehind').displayValue??'')}</td></tr>`}).join('')}</tbody></table></div>`}).join('');
+  const games=(sb&&sb.events||[]).map(ev=>{const c=ev.competitions&&ev.competitions[0];if(!c)return'';const tm=c.competitors||[],a=tm.find(x=>x.homeAway==='away')||tm[0]||{},h=tm.find(x=>x.homeAway==='home')||tm[1]||{},pre=ev.status&&ev.status.type&&ev.status.type.state==='pre';
+    const nm=x=>esc(x.team&&x.team.abbreviation||'');return `<li>${nm(a)} ${pre?'':esc(a.score||'0')} – ${pre?'':esc(h.score||'0')} ${nm(h)} <small>${esc(ev.status&&ev.status.type&&ev.status.type.shortDetail||'')}</small></li>`}).join('');
+  return `<div class="nba">${games?`<ul class="nba-g" aria-label="Games">${games}</ul>`:''}<div class="nba-c">${conf}</div></div>`}
 OPEN.likes=()=>{
   const fresh=!document.getElementById('w-likes');
   const el=win({id:'w-likes',title:'things_i_like.txt',cls:'likes',w:560,x:.6,y:.44,html:`<div class="lb-top"><h2><small>my favourite</small>AENOU LIBRARY</h2></div><div class="lk-f" role="group" aria-label="Filter by kind"></div><div class="lb-shelves"></div><div class="lk-n"></div>`});
   if(!fresh)return el;let kind='';
   const draw=()=>{const kinds=Object.keys(KINDS).filter(k=>LIKES.some(l=>l.k===k));
-    $('.lk-f',el).innerHTML=`<button type="button" data-k="" aria-pressed="${!kind}">ALL</button>`+kinds.map(k=>`<button type="button" data-k="${k}" aria-pressed="${kind===k}">${KINDS[k][1]}</button>`).join('');
+    $('.lk-f',el).innerHTML=`<button type="button" data-k="" aria-pressed="${!kind}">ALL</button>`+kinds.map(k=>`<button type="button" data-k="${k}" aria-pressed="${kind===k}">${KINDS[k][1]}</button>`).join('')+`<button type="button" data-k="nba" aria-pressed="${kind==='nba'}">NBA</button>`;
+    if(kind==='nba'){$('.lb-shelves',el).innerHTML='<div class="nba">loading…</div>';$('.lk-n',el).textContent='NBA · live from ESPN';
+      nbaGet().then(d=>{if(kind==='nba')$('.lb-shelves',el).innerHTML=nbaHTML(d)},()=>{if(kind==='nba')$('.lb-shelves',el).innerHTML='<div class="nba">The NBA feed is not answering right now. Try again later.</div>'});return}
     $('.lb-shelves',el).innerHTML=kinds.filter(k=>!kind||k===kind).map(k=>{const items=LIKES.map((l,i)=>[l,i]).filter(([l])=>l.k===k);
       return `<section class="lb-shelf" aria-label="${KINDS[k][2]}"><div class="lb-head"><b>${KINDS[k][2]}</b><span>${items.length} ${items.length===1?KINDS[k][3]:KINDS[k][4]}</span><button type="button" data-s="-1" aria-label="Scroll left">‹</button><button type="button" data-s="1" aria-label="Scroll right">›</button></div>
         <div class="lb-wrap"><div class="lb-row">${items.map(([l,i])=>{const o=lbLook(l);return `<button type="button" class="lb-co ${l.k} v${o.v}" data-i="${i}" style="${lbVars(o)}" aria-label="${esc(l.t)}${l.by?', '+esc(l.by):''}">${lbFace(l,o)}</button>`}).join('')}</div><div class="lb-glass" style="--g:${LB_GLASS[k]}"></div></div></section>`}).join('');
