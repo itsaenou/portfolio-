@@ -223,6 +223,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .fm.open .fm-list{height:352px;border-top:1px solid #111110}
 .fm-list iframe{display:block;width:100%;height:352px;border:0}
 .fm-foot{display:flex;align-items:center;gap:10px;padding:6px 10px 8px;border-top:1px solid #11111022;font-size:10px;letter-spacing:.1em}
+.fm-note{margin:0;padding:6px 10px 8px;border-top:1px solid #11111022;font-size:10px;line-height:1.4;color:var(--wmute)}
+.fm-note a{color:inherit;text-underline-offset:2px}
 .fm-foot button,.fm-foot a{color:#111110;text-decoration:none;padding:1px 3px;white-space:nowrap}
 .fm-foot a{margin-left:auto}
 .fm-foot button:hover,.fm-foot a:hover,.fm-foot button:focus-visible,.fm-foot a:focus-visible{background:var(--yellow)}
@@ -479,6 +481,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
     <button type="button" id="fmpick" aria-expanded="false" aria-controls="fmlist">CHOOSE A SONG</button>
     <a href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener">SPOTIFY ↗</a>
   </div>
+  <p class="fm-note" id="fmnote">30-second previews · <a href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener">listen in full on Spotify ↗</a></p>
 </section>
 
 <div id="wins"></div>
@@ -1119,7 +1122,8 @@ function pgInit(){
   pgLayout();
 }
 
-function setLang(l){if(!UI[l])return;lang=l;try{localStorage.setItem('lang',l)}catch(_){}
+const FMN={es:'Fragmentos de 30 segundos · <a href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener">escúchalas enteras en Spotify ↗</a>',ca:'Fragments de 30 segons · <a href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener">escolta-les senceres a Spotify ↗</a>',en:'30-second previews · <a href="https://open.spotify.com/playlist/1vwP2i7MblzSlrk4iXS9m0" target="_blank" rel="noopener">listen in full on Spotify ↗</a>'};
+function setLang(l){if(!UI[l])return;lang=l;{const n=document.getElementById('fmnote');if(n&&FMN[l])n.innerHTML=FMN[l]}try{localStorage.setItem('lang',l)}catch(_){}
   $$('[data-lang]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===l));wcase.lang=l;wFilt();wRows();
   if(!work.hidden&&!wcase.hidden)route(here)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang)});
