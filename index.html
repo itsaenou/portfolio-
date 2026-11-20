@@ -292,6 +292,7 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .m-grid{display:grid;grid-template-columns:repeat(var(--c),minmax(0,1fr));gap:clamp(8px,1.2vw,18px);align-items:start}
 .m-grid img{width:100%}
 .m-video video{width:100%;max-height:88vh;background:#000}
+.m-loop video{background:#f2f2f0;aspect-ratio:1600/1132;object-fit:contain}
 .cnone{margin:0;padding:28px 0;font:12px var(--mono);color:var(--cmute);border-top:1px solid var(--cline);border-bottom:1px solid var(--cline)}
 
 .frame{margin:0;border:1px solid var(--cfg);border-radius:7px;overflow:hidden;background:var(--cbg);font-family:var(--sys)}
@@ -766,7 +767,7 @@ const PROJ=[
   d:'GROC es una herramienta de apoyo emocional en forma de videojuego narrativo. Un laberinto de píxeles representa la ansiedad y las estrellas que recoges simbolizan estrategias de afrontamiento, como la respiración consciente. Se juega con una controladora física: una esfera luminosa con giroscopio y matriz LED, conectada con Arduino y Unity.',
   w:'Proyecto de ELISAVA, con Rexin Ye. Mi parte: branding, diseño gráfico y editorial; creamos juntos el videojuego en Unity y la web, el tráiler en After Effects y la controladora alternativa con Arduino y giroscopio.',
   links:[['https://www.instagram.com/reel/DKK6x3BMU4-/','Ver el reel en Instagram']],
-  media:[{t:'grid',c:3,im:['groc-1','groc-2','groc-4']},{t:'grid',c:3,im:['groc-5','groc-6','groc-3']},{t:'doc',f:'groc',n:53,r:'1600/1132',label:'Memoria completa'}]},
+  media:[{t:'loop',src:'p/v/groc-libro.mp4',poster:'p/img/groc-libro-poster.jpg'},{t:'grid',c:3,im:['groc-1','groc-2','groc-4']},{t:'grid',c:3,im:['groc-5','groc-6','groc-3']},{t:'doc',f:'groc',n:53,r:'1600/1132',label:'Memoria completa'}]},
  {id:'gnubemail',n:'Gnubemail',y:'2025',th:1,acc:'#9cc4ff',
   s:'Un guante que convierte la sobrecarga digital en una pausa',
   tags:'3D & prototipado · Diseño interactivo · Diseño gráfico',
@@ -931,6 +932,7 @@ const BLOCK={
  fit:(b,p)=>`<div class="m-fit">${pics(b,p)}</div>`,
  grid:(b,p)=>`<div class="m-grid" style="--c:${b.c}"${b.solo?' data-solo':''}>${pics(b,p)}</div>`,
  none:()=>`<p class="cnone">${U().none}</p>`,
+ loop:(b,p)=>`<div class="m-video m-loop"><video src="${b.src}" poster="${b.poster}" ${matchMedia('(prefers-reduced-motion: reduce)').matches?'controls':'autoplay loop'} muted playsinline preload="metadata" aria-label="${esc(p.n)} — ${U().video}"></video></div>`,
  video:(b,p)=>`<div class="m-video"><video src="${b.src}" poster="${b.poster}" controls muted playsinline preload="none" aria-label="${esc(p.n)} — ${U().video}"></video></div>`,
  link:(b,p)=>`<figure class="frame"><div class="bar"><i></i><i></i><i></i><b>${esc(b.url.replace(/^https?:\/\/(www\.)?/,''))}</b></div><p class="blink"><a href="${b.url}" target="_blank" rel="noopener">${linkL(p,0,b.label)} ↗</a></p></figure>`,
  doc:(b,p)=>`<figure class="frame doc" style="--rw:${(b.r.split('/')[0]/b.r.split('/')[1]).toFixed(3)}" tabindex="0" data-f="${b.f}" data-n="${b.n}" aria-label="${esc(docL(b.label))}, ${b.n} ${U().pages}. ${U().keys}">
