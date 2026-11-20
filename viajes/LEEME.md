@@ -31,6 +31,7 @@ Entre dos países va una coma.
       "pais": "Italia",
       "cuando": "Agosto 2024",
       "cartel": "viajes/italia/cartel.jpg",
+      "ciudades": [ { "nombre": "Roma", "lat": 41.9028, "lon": 12.4964 }, { "nombre": "Florencia", "lat": 43.7696, "lon": 11.2558 } ],
       "fotos": ["viajes/italia/01.jpg", "viajes/italia/02.jpg"],
       "sitios": [
         { "nombre": "Trattoria da Enzo", "ciudad": "Roma", "tipo": "comer", "direccion": "Via Roma 12, 00184 Roma",
@@ -54,6 +55,7 @@ Entre dos países va una coma.
 - **tipo** de sitio: `comer`, `ver`, `dormir` u `otro`.
 - **cuando**, **nota**, **ciudad**, **direccion**, **media**: opcionales. En **media** y en **fotos** puedes poner imágenes (.jpg) o vídeos (.mp4, .mov, .webm; máximo 45 MB cada uno).
 - Si un sitio tiene **direccion**, el enlace de Google Maps va a esa dirección.
+- **ciudades**: las líneas del mapa van de Barcelona a cada ciudad. Cada sitio con `lat`/`lon` sale como un punto pequeño. Desde el editor (#editar) las coordenadas se ponen solas al escribir la ciudad o la dirección.
 - Cada sitio enlaza solo a Google Maps con su nombre y ciudad. Si quieres otro enlace, añade `"url": "https://..."`.
 
 Guarda con **Commit changes**. En uno o dos minutos está en la web.

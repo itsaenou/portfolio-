@@ -10,6 +10,18 @@ const setTok=v=>{try{v?localStorage.setItem('tv-token',v):localStorage.removeIte
 const slug=t=>norm(t).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'pais';
 const srcOf=x=>x&&typeof x==='object'?x.url:x;
 const mark=()=>{dirty=true;bar()};
+/* ubicación exacta con OpenStreetMap (Nominatim): una búsqueda por segundo como mucho */
+const GEO={};let geoQ=Promise.resolve();
+function geocode(q){q=q.trim();if(!q)return Promise.resolve(null);if(GEO[q])return GEO[q];
+  GEO[q]=geoQ=geoQ.then(()=>new Promise(r=>setTimeout(r,1100))).then(()=>fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=es&q='+encodeURIComponent(q)))
+    .then(r=>r.ok?r.json():[]).then(d=>d&&d[0]?[+(+d[0].lat).toFixed(5),+(+d[0].lon).toFixed(5)]:null).catch(()=>null);return GEO[q]}
+async function addCity(t,name){name=name.trim();if(!name||t.ciudades.some(c=>norm(c.nombre)===norm(name)))return;
+  const c={nombre:name,lat:null,lon:null};t.ciudades.push(c);mark();const g=await geocode(name+', '+t.pais);if(g){c.lat=g[0];c.lon=g[1]}mark();redrawAll()}
+async function locate(t,s){const q=s.direccion&&s.direccion.trim()?s.direccion+', '+t.pais:[s.nombre,s.ciudad,t.pais].filter(Boolean).join(', ');
+  if(!s.nombre&&!s.direccion)return;s._st='Buscando la ubicación…';paintLoc(s);const g=await geocode(q)||(s.direccion?await geocode([s.nombre,s.ciudad,t.pais].filter(Boolean).join(', ')):null);
+  if(g){s.lat=g[0];s.lon=g[1];s._st='Ubicado en el mapa ✓'}else{delete s.lat;delete s.lon;s._st='No encuentro esta dirección: revísala'}
+  paintLoc(s);mark();if(s.ciudad)addCity(t,s.ciudad);mapDraw&&mapDraw()}
+function paintLoc(s){const el=s._el&&s._el.querySelector('.loc');if(el)el.textContent=s._st||''}
 addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 
 /* ---------- estilos ---------- */
@@ -43,6 +55,14 @@ const st=document.createElement('style');st.textContent=`
 .tvx .over{outline:3px solid var(--yellow)!important}
 .tvx .when{background:transparent;border:0;border-bottom:1px dashed #ffffff44;color:#cfcfca;font:12px var(--mono);letter-spacing:.06em;text-align:center;padding:4px;width:220px}
 .tvx .when:focus{outline:none;border-bottom-color:var(--yellow)}
+.tvx .cities{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:520px}
+.tvx .cities span{display:inline-flex;align-items:center;gap:4px;padding:3px 4px 3px 10px;border-radius:12px;background:#ffffff1a;font:italic 13px "Times New Roman",Times,serif;color:#fff}
+.tvx .cities span.nf{outline:1px dashed #ff8a7a}
+.tvx .cities span button{width:20px;height:20px;border-radius:50%;font-size:10px;color:#cfcfca}
+.tvx .cities span button:hover{background:var(--red);color:#fff}
+.tvx .cityin{background:transparent;border:1px dashed #ffffff44;border-radius:12px;color:#fff;font:12px var(--mono);padding:4px 10px;width:150px}
+.tvx .cityin:focus{outline:none;border-color:var(--yellow)}
+.tvx .tv-rec .loc{font:10px var(--mono);color:#a9a9a3;min-height:12px}
 .tvx .rm{position:absolute;top:6px;right:6px;width:28px;height:28px;border-radius:50%;background:#111110cc;color:#fff;font-size:13px;display:grid;place-items:center}
 .tvx .rm:hover,.tvx .rm:focus-visible{background:var(--red)}
 .tvx .phg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
@@ -83,12 +103,14 @@ async function shrink(file,max,q){const bmp=await createImageBitmap(file).catch(
   const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(bmp,0,0,c.width,c.height);
   return new Promise(r=>c.toBlob(b=>b.arrayBuffer().then(r),'image/jpeg',q))}
 function toJSON(){return JSON.stringify({paises:TRIPS.map(t=>{const o={pais:t.pais};if(t.cuando)o.cuando=t.cuando;o.cartel=srcOf(t.cartel)||'';o.fotos=t.fotos.map(srcOf);
-  o.sitios=t.sitios.filter(x=>x.nombre&&x.nombre.trim()).map(x=>{const r={nombre:x.nombre.trim()};if(x.ciudad)r.ciudad=x.ciudad.trim();r.tipo=x.tipo||'otro';if(x.direccion&&x.direccion.trim())r.direccion=x.direccion.trim();if(x.nota)r.nota=x.nota.trim();if(x.media&&x.media.length)r.media=x.media.map(srcOf);if(x.url)r.url=x.url;return r});
-  if(t.latC!=null){o.lat=t.latC;o.lon=t.lonC}return o})},null,2)+'\n'}
+  o.sitios=t.sitios.filter(x=>x.nombre&&x.nombre.trim()).map(x=>{const r={nombre:x.nombre.trim()};if(x.ciudad)r.ciudad=x.ciudad.trim();r.tipo=x.tipo||'otro';if(x.direccion&&x.direccion.trim())r.direccion=x.direccion.trim();if(x.nota)r.nota=x.nota.trim();if(x.media&&x.media.length)r.media=x.media.map(srcOf);if(x.lat!=null){r.lat=x.lat;r.lon=x.lon}if(x.url)r.url=x.url;return r});
+  if(t.ciudades&&t.ciudades.length)o.ciudades=t.ciudades.map(c=>c.lat!=null?{nombre:c.nombre,lat:c.lat,lon:c.lon}:{nombre:c.nombre});if(t.latC!=null){o.lat=t.latC;o.lon=t.lonC}return o})},null,2)+'\n'}
 async function publish(){
   if(saving)return;if(!getTok()){tokenPanel();return}
   saving=true;bar('Preparando…');
   try{
+    bar('Terminando de ubicar los sitios…');await geoQ;
+    for(const t of TRIPS)for(const c of t.ciudades||[])if(c.lat==null){const g=await geocode(c.nombre+', '+t.pais);if(g){c.lat=g[0];c.lon=g[1]}}
     const ts=Date.now().toString(36),files=[];
     for(const t of TRIPS){const sl=slug(t.pais);
       if(t.cartel&&typeof t.cartel==='object')files.push({obj:t,key:'cartel',path:`viajes/${sl}/cartel-${ts}.jpg`,file:t.cartel.file,max:2000,q:.88});
@@ -138,7 +160,7 @@ let mapDraw=null;
 function addCountry(name){const e=EU[norm(name)];const key=Object.keys(EU).find(k=>k===norm(name));if(!key)return-1;
   const label=({'españa':'España','monaco':'Mónaco','belgica':'Bélgica','paises bajos':'Países Bajos','chequia':'Chequia','hungria':'Hungría','turquia':'Turquía','rumania':'Rumanía','reino unido':'Reino Unido','macedonia del norte':'Macedonia del Norte','bosnia y herzegovina':'Bosnia y Herzegovina','san marino':'San Marino'})[key]||key.charAt(0).toUpperCase()+key.slice(1);
   let i=TRIPS.findIndex(t=>norm(t.pais)===key);if(i>=0)return i;
-  TRIPS.push({pais:label,cuando:'',cartel:'',fotos:[],sitios:[],lat:e[0],lon:e[1],key:key+'|'+norm(e[2])});mark();return TRIPS.length-1}
+  TRIPS.push({pais:label,cuando:'',cartel:'',fotos:[],sitios:[],ciudades:[],lat:e[0],lon:e[1],key:key+'|'+norm(e[2])});mark();return TRIPS.length-1}
 const NAMES=Object.keys(EU);
 OPEN.travel=()=>{
   const fresh=!document.getElementById('w-tvedit');
@@ -181,22 +203,24 @@ function edit(i,keepScroll){
   const y=fs.scrollTop,tt={...t,cartel:srcOf(t.cartel)};
   fs.innerHTML=`<button type="button" class="tv-x" data-a="x" aria-label="Volver al mapa">✕</button>${n>1?`<button type="button" class="tv-nav p" data-a="p" aria-label="País anterior">‹</button><button type="button" class="tv-nav n" data-a="n" aria-label="País siguiente">›</button>`:''}
     <div class="tv-hero"><button type="button" class="slot${tt.cartel?'':' empty'}" data-a="cartel" aria-label="Cambiar el cartel de ${esc(t.pais)}">${tt.cartel?`<img src="${esc(tt.cartel)}" alt="">`:''}<span class="hint">${tt.cartel?'Cambiar cartel<br>(pulsa o suelta una imagen)':'Suelta aquí tu cartel<br>o pulsa para elegirlo<br><br>vertical A · 1240×1754 px'}</span></button>
-      <p><b>${esc(t.pais)}</b></p><input class="when" value="${esc(t.cuando||'')}" placeholder="¿Cuándo fuiste? (opcional)" aria-label="Cuándo fuiste"></div>
+      <p><b>${esc(t.pais)}</b></p><input class="when" value="${esc(t.cuando||'')}" placeholder="¿Cuándo fuiste? (opcional)" aria-label="Cuándo fuiste"><div class="cities">${t.ciudades.map((c,k)=>`<span${c.lat==null?' class="nf" title="No la encuentro en el mapa"':''}>${esc(c.nombre)}<button type="button" data-a="rmcity" data-k="${k}" aria-label="Quitar ${esc(c.nombre)}">✕</button></span>`).join('')}<input class="cityin" placeholder="+ ciudad y Enter" aria-label="Añadir ciudad"></div></div>
     <div class="tv-more"><h3>Fotos y vídeos · ${t.fotos.length}</h3><div class="phg" data-vid="1">${t.fotos.map((f,k)=>`<div>${thumb(f)}<button type="button" class="rm" data-a="rmph" data-k="${k}" aria-label="Quitar foto ${k+1}">✕</button></div>`).join('')}<button type="button" class="addph" data-a="addph">+ Añadir fotos o vídeos<br>(pulsa o suéltalos aquí)</button></div>
     <h3>Recomendaciones · ${t.sitios.length}</h3><ul class="tv-rec">${t.sitios.map((s,k)=>`<li data-k="${k}"><button type="button" class="rm" data-a="rmrec" aria-label="Quitar sitio">✕</button>
       <div class="chips">${TYPES.map(([v,l])=>`<button type="button" data-a="tipo" data-v="${v}" aria-pressed="${(s.tipo||'otro')===v}">${l}</button>`).join('')}</div>
-      <input class="n" data-f="nombre" value="${esc(s.nombre||'')}" placeholder="Nombre del sitio" aria-label="Nombre del sitio"><input data-f="direccion" value="${esc(s.direccion||'')}" placeholder="Dirección (calle, número, ciudad)" aria-label="Dirección"><input data-f="ciudad" value="${esc(s.ciudad||'')}" placeholder="Ciudad" aria-label="Ciudad"><textarea data-f="nota" rows="2" placeholder="Tu recomendación (opcional)" aria-label="Tu recomendación">${esc(s.nota||'')}</textarea><div class="rmed">${(s.media||[]).map((f,m)=>`<div>${thumb(f)}<button type="button" class="rm" data-a="rmmed" data-m="${m}" aria-label="Quitar">✕</button></div>`).join('')}<button type="button" class="addmed" data-a="addmed">+ foto o vídeo</button></div></li>`).join('')}
+      <input class="n" data-f="nombre" value="${esc(s.nombre||'')}" placeholder="Nombre del sitio" aria-label="Nombre del sitio"><input data-f="direccion" value="${esc(s.direccion||'')}" placeholder="Dirección (calle, número, ciudad)" aria-label="Dirección"><input data-f="ciudad" value="${esc(s.ciudad||'')}" placeholder="Ciudad" aria-label="Ciudad"><small class="loc">${s.lat!=null?'Ubicado en el mapa ✓':''}</small><textarea data-f="nota" rows="2" placeholder="Tu recomendación (opcional)" aria-label="Tu recomendación">${esc(s.nota||'')}</textarea><div class="rmed">${(s.media||[]).map((f,m)=>`<div>${thumb(f)}<button type="button" class="rm" data-a="rmmed" data-m="${m}" aria-label="Quitar">✕</button></div>`).join('')}<button type="button" class="addmed" data-a="addmed">+ foto o vídeo</button></div></li>`).join('')}
       <li class="addrec" role="button" tabindex="0" data-a="addrec">+ Añadir sitio</li></ul></div>
     <div class="tvx-foot"><span class="tve-st"></span><button type="button" class="tve-btn del" data-a="del">Quitar país</button><button type="button" class="tve-btn tve-pub" data-a="pub">Guardar y publicar</button></div>`;
   const slot=$('.slot',fs);dropOn(slot,f=>{t.cartel=asObj(f[0]);mark();edit(i,true)});dropOn($('.phg',fs),f=>{f=okFiles(f);if(!f.length)return;t.fotos.push(...f.map(asObj));mark();edit(i,true)});
   $('.when',fs).oninput=e=>{t.cuando=e.target.value;mark()};
-  $$('.tv-rec li[data-k]',fs).forEach(li=>{const s=t.sitios[+li.dataset.k];$$('[data-f]',li).forEach(inp=>inp.oninput=()=>{s[inp.dataset.f]=inp.value;mark()});li.dataset.vid=1;dropOn(li,f=>{f=okFiles(f);if(!f.length)return;(s.media=s.media||[]).push(...f.map(asObj));mark();edit(i,true)})});
+  $('.cityin',fs).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();const v=e.target.value;e.target.value='';addCity(t,v).then(()=>{const ci=$('.cityin',fs);ci&&ci.focus()})}};
+  $$('.tv-rec li[data-k]',fs).forEach(li=>{const s=t.sitios[+li.dataset.k];s._el=li;$$('[data-f]',li).forEach(inp=>{inp.oninput=()=>{s[inp.dataset.f]=inp.value;mark()};if(inp.dataset.f!=='nota')inp.onchange=()=>locate(t,s)});li.dataset.vid=1;dropOn(li,f=>{f=okFiles(f);if(!f.length)return;(s.media=s.media||[]).push(...f.map(asObj));mark();edit(i,true)})});
   fs.onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
     if(a==='x')closeEd();else if(a==='p')edit(i-1);else if(a==='n')edit(i+1);
     else if(a==='cartel')pick(false,f=>{if(f[0]){t.cartel=asObj(f[0]);mark();edit(i,true)}});
     else if(a==='addph')pick(true,f=>{f=okFiles(f);if(!f.length)return;t.fotos.push(...f.map(asObj));mark();edit(i,true)},'image/*,video/*');
     else if(a==='addmed'){const s=t.sitios[+b.closest('li').dataset.k];pick(true,f=>{f=okFiles(f);if(!f.length)return;(s.media=s.media||[]).push(...f.map(asObj));mark();edit(i,true)},'image/*,video/*')}
     else if(a==='rmmed'){const s=t.sitios[+b.closest('li').dataset.k];s.media.splice(+b.dataset.m,1);mark();edit(i,true)}
+    else if(a==='rmcity'){t.ciudades.splice(+b.dataset.k,1);mark();edit(i,true);mapDraw&&mapDraw()}
     else if(a==='rmph'){t.fotos.splice(+b.dataset.k,1);mark();edit(i,true)}
     else if(a==='addrec'){t.sitios.push({nombre:'',ciudad:'',tipo:'comer',nota:''});mark();edit(i,true);const ins=$$('.tv-rec input.n',fs);ins[ins.length-1].focus()}
     else if(a==='rmrec'){t.sitios.splice(+b.closest('li').dataset.k,1);mark();edit(i,true)}

@@ -200,6 +200,10 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .tv-dot:hover,.tv-dot:focus-visible,.tv-dot.hot{transform:scale(1.35)}
 .tv-dot:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
 .tv-dot span{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);font:13px/1 "Times New Roman",Times,serif;color:#111110;white-space:nowrap}
+.tv-dot.c{width:11px;height:11px;margin:-5.5px 0 0 -5.5px}
+.tv-dot em{position:absolute;left:calc(100% + 5px);top:50%;transform:translateY(-50%);font:italic 11px/1 "Times New Roman",Times,serif;color:#111110;white-space:nowrap;pointer-events:none}
+.tv-sd{position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#fff;border:1.5px solid #111110;z-index:2;padding:0}
+.tv-sd:hover{transform:scale(1.6)}
 .tv-dot.o{background:#111110;width:20px;height:20px;margin:-10px 0 0 -10px;pointer-events:none}
 .tv-dot.o span{font-size:16px}
 .tv-th{position:absolute;z-index:3;display:flex;flex-direction:column;gap:3px;align-items:flex-start;transition:opacity .2s}
@@ -762,7 +766,7 @@ const TV_LANDC={"IS":"M0.00 0.00h.01M0.86 0.00h.01M0.86 0.84h.01M1.68 0.84h.01M0
 const tvPoster=(t,cls='')=>t.cartel?`<img class="tv-po ${cls}" src="${esc(t.cartel)}" alt="${esc(t.pais)}" loading="lazy" decoding="async">`:`<span class="tv-po tv-ph ${cls}" role="img" aria-label="${esc(t.pais)}"><em>${esc(t.pais)}</em><i></i><small>${esc(t.cuando||'travel_log')}</small></span>`;
 const TV_READY=fetch('viajes/viajes.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(d=>{
   TRIPS=((d&&d.paises)||[]).filter(t=>t&&t.pais).map(t=>{const e=EU[norm(t.pais)];const lat=t.lat??(e&&e[0]),lon=t.lon??(e&&e[1]);
-    return{...t,fotos:t.fotos||[],sitios:t.sitios||[],lat,lon,latC:t.lat,lonC:t.lon,key:norm(t.pais)+'|'+norm(e?e[2]:'')}});
+    return{...t,fotos:t.fotos||[],sitios:t.sitios||[],ciudades:(t.ciudades||[]).filter(c=>c&&c.nombre),lat,lon,latC:t.lat,lonC:t.lon,key:norm(t.pais)+'|'+norm(e?e[2]:'')}});
   if(TRIPS.length)$('#travelli').hidden=false}).catch(()=>{});
 /* #editar loads Ainoa's own visual editor for travel_log (viajes/editor.js) */
 function tvEditLoad(){if(location.hash!=='#editar'||window.TV_EDITOR)return;window.TV_EDITOR=1;const sc=document.createElement('script');sc.src='viajes/editor.js?v='+Date.now();document.body.appendChild(sc)}
@@ -800,21 +804,23 @@ function tvMapHTML(q,extra=''){
   const H=88.2,P=(la,lo)=>{const[x,y]=tvXY(la,lo);return[x,y*H/100]};const[ox,oy]=P(...TV_HOME);
   const rnd=(t,k)=>{const h=lbHash(t+k);return((h%1000)/1000)-.5};
   let ink='',html='';const W=10.6,Ht=19.5,placed=[];
-  const pts=TRIPS.map(t=>t.lat==null?null:P(t.lat,t.lon));const obst=pts.filter(Boolean).map(([x,y])=>[x-1.6,y-1.6,3.2,3.2]).concat([[ox-2,oy-2,4,4]]);
+  const spots=TRIPS.map(t=>{const c=(t.ciudades||[]).filter(c=>c.lat!=null).map(c=>({n:c.nombre,p:P(c.lat,c.lon)}));return c.length?c:t.lat!=null?[{n:'',p:P(t.lat,t.lon)}]:[]});
+  const obst=spots.flat().map(({p:[x,y]})=>[x-1.6,y-1.6,3.2,3.2]).concat([[ox-2,oy-2,4,4]]);
   const free=(r)=>r[0]>=.5&&r[1]>=.5&&r[0]+r[2]<=99.5&&r[1]+r[3]<=H-.5&&!placed.concat(obst).some(o=>r[0]<o[0]+o[2]&&r[0]+r[2]>o[0]&&r[1]<o[1]+o[3]&&r[1]+r[3]>o[1]);
   const ANG=[-50,-130,50,130,0,180,-90,90];
-  TRIPS.forEach((t,i)=>{if(!pts[i])return;const[x,y]=pts[i],hit=!q||t.key.includes(q),dim=hit?'':' dim';
-    const dx=x-ox,dy=y-oy,d=Math.hypot(dx,dy)||1,nx=-dy/d,ny=dx/d,a=rnd(t.pais,'a')*d*.9,b=rnd(t.pais,'b')*d*.9;
-    const loop=lbHash(t.pais)%3===0?` C ${x+nx*6+dx/d*5} ${y+ny*6+dy/d*5} ${x+dx/d*9-nx*4} ${y+dy/d*9-ny*4} ${x} ${y}`:'';
-    ink+=`<path class="rt${dim}" data-r="${i}" d="M ${ox} ${oy} C ${ox+dx*.3+nx*a} ${oy+dy*.3+ny*a} ${ox+dx*.75+nx*b} ${oy+dy*.75+ny*b} ${x} ${y}${loop}"/>`;
-    let best=null;
+  TRIPS.forEach((t,i)=>{if(!spots[i].length)return;const hit=!q||t.key.includes(q),dim=hit?'':' dim';
+    spots[i].forEach(({n,p:[x,y]},j)=>{const dx=x-ox,dy=y-oy,d=Math.hypot(dx,dy)||1,nx=-dy/d,ny=dx/d,a=rnd(t.pais+j,'a')*d*.9,b=rnd(t.pais+j,'b')*d*.9;
+      const loop=j===0&&lbHash(t.pais)%3===0?` C ${x+nx*6+dx/d*5} ${y+ny*6+dy/d*5} ${x+dx/d*9-nx*4} ${y+dy/d*9-ny*4} ${x} ${y}`:'';
+      ink+=`<path class="rt${dim}" data-r="${i}" d="M ${ox} ${oy} C ${ox+dx*.3+nx*a} ${oy+dy*.3+ny*a} ${ox+dx*.75+nx*b} ${oy+dy*.75+ny*b} ${x} ${y}${loop}"/>`;
+      html+=`<button type="button" class="tv-dot${j?' c':''}${dim}" data-i="${i}" style="left:${x}%;top:${y*100/H}%" aria-label="${esc(n||t.pais)}" title="${esc(n||t.pais)}">${j?'':`<span>${i+1}</span>`}${n?`<em>${esc(n)}</em>`:''}</button>`});
+    (t.sitios||[]).forEach(s=>{if(s.lat==null)return;const[x,y]=P(s.lat,s.lon);html+=`<button type="button" class="tv-sd${dim}" data-i="${i}" style="left:${x}%;top:${y*100/H}%" title="${esc(s.nombre||'')}" aria-label="${esc(s.nombre||'')}" tabindex="-1"></button>`});
+    const[x,y]=spots[i][0].p;let best=null;
     for(const R of [11,15,20,26])for(const g of ANG){const c=Math.cos(g*Math.PI/180),sn=Math.sin(g*Math.PI/180);
       const r=[x+c*R*.9-W/2,y+sn*R*.75-Ht/2,W,Ht];if(free(r)){best=r;break}}
-    if(!best){const r=[Math.min(99.5-W,Math.max(.5,x+3)),Math.min(H-.5-Ht,Math.max(.5,y-Ht-3)),W,Ht];best=r}
+    if(!best)best=[Math.min(99.5-W,Math.max(.5,x+3)),Math.min(H-.5-Ht,Math.max(.5,y-Ht-3)),W,Ht];
     placed.push(best);
     const ex=Math.max(best[0],Math.min(best[0]+W,x)),ey=Math.max(best[1],Math.min(best[1]+Ht,y)),ld=Math.hypot(x-ex,y-ey)||1;
     ink+=`<path class="ar${dim}" data-r="${i}" d="M ${ex} ${ey} L ${x-(x-ex)/ld*1.6} ${y-(y-ey)/ld*1.6}"/>`;
-    html+=`<button type="button" class="tv-dot${dim}" data-i="${i}" style="left:${x}%;top:${y*100/H}%" aria-label="${esc(t.pais)}"><span>${i+1}</span></button>`;
     const tt={...t,cartel:typeof t.cartel==='object'&&t.cartel?t.cartel.url:t.cartel};
     html+=`<button type="button" class="tv-th${dim}" data-i="${i}" style="left:${best[0]}%;top:${best[1]*100/H}%;width:${W}%" aria-label="${esc(t.pais)}" tabindex="-1">${tvPoster(tt)}<i>${esc(t.pais)}${t.cuando?', '+esc(t.cuando):''}</i>${t.fotos.length?`<small>${t.fotos.length} ${TV().photos}</small>`:''}</button>`});
   return `<div class="tv-map">${land}<svg class="tv-ink" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true">${ink}</svg>
