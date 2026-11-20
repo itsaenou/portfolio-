@@ -269,13 +269,13 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .lb-head button{width:22px;height:22px;display:grid;place-items:center;color:var(--wmute);font-size:13px}
 .lb-head button:hover,.lb-head button:focus-visible{color:#111110;background:var(--yellow)}
 .lb-wrap{position:relative}
-.lb-row{display:flex;align-items:flex-end;gap:3px;min-height:246px;padding:18px 26px 14px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none}
+.lb-row{display:flex;align-items:flex-end;gap:3px;min-height:306px;padding:18px 26px 14px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none}
 .lb-row::-webkit-scrollbar{display:none}
-.lb-sp{flex:none;position:relative;width:var(--w);height:var(--h);background:var(--c);color:var(--t);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:var(--pt,10px) 0 9px;
+.lb-sp{flex:none;position:relative;width:var(--w);height:var(--h);background:var(--c);color:var(--t);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:0;
   box-shadow:inset 3px 0 0 rgba(255,255,255,.14),inset -4px 0 0 rgba(0,0,0,.12),0 1px 0 rgba(0,0,0,.25);transition:transform .25s cubic-bezier(.2,.8,.2,1);overflow:hidden;cursor:pointer}
 .lb-sp:hover,.lb-sp:focus-visible{transform:translateY(-14px)}
 .lb-sp:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
-.lb-sp .tt{writing-mode:vertical-rl;transform:rotate(180deg);font:700 var(--fs)/1.08 var(--sans);letter-spacing:-.01em;text-transform:uppercase;white-space:normal;max-height:calc(100% - 46px);max-width:calc(100% - 8px);overflow:hidden;text-align:start}
+.lb-sp .tt{position:absolute;left:50%;bottom:66px;height:calc(100% - 66px - var(--pt,10px) - 4px);transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;font:700 var(--fs)/1.08 var(--sans);letter-spacing:-.01em;text-transform:uppercase;white-space:normal;max-width:calc(100% - 6px);overflow:hidden;text-align:start}
 .lb-sp .au{writing-mode:vertical-rl;transform:rotate(180deg);font:7px/1 var(--mono);letter-spacing:.08em;opacity:.8;white-space:nowrap;max-height:60px;overflow:hidden}
 .lb-sp .bd{position:absolute;left:0;right:0;height:var(--bh);top:var(--bt);background:var(--a)}
 .lb-sp>span{position:relative}
@@ -742,7 +742,7 @@ const LB_GLASS={book:'#ff8a00',film:'#1f6bff',theatre:'#ff2a1a',museum:'#2e6b4f'
 const lbHash=t=>{let h=2166136261;for(const ch of t)h=Math.imul(h^ch.codePointAt(0),16777619);return h>>>0};
 function lbLook(l){const h=lbHash(l.t+'|'+(l.by||''));const pal=l.k==='film'?['#111110','#ffffff',LB_PAL[h%LB_PAL.length][0]==='#111110'?'#ff2a1a':LB_PAL[h%LB_PAL.length][0]]:LB_PAL[h%LB_PAL.length];
   const len=l.t.length,v=(h>>>4)%3;
-  return{c:pal[0],t:pal[1],a:pal[2],v,w:l.k==='film'?30:len>22?50+((h>>>8)%10):Math.max(34,Math.min(52,26+len*1.4+((h>>>8)%10))),h:l.k==='film'?206:(len>22?214:182)+((h>>>12)%(len>22?18:36)),fs:len>18?11:13,bt:v===1?'70%':'0%',bh:v===0?'0px':v===1?'14%':'10%',pt:v===2?'12%':'10px'}}
+  return{c:pal[0],t:pal[1],a:pal[2],v,w:l.k==='film'?30:len>22?50+((h>>>8)%10):Math.max(34,Math.min(52,26+len*1.4+((h>>>8)%10))),h:l.k==='film'?250:(len>22?268:226)+((h>>>12)%(len>22?14:30)),fs:len>30?11:len>14?12:13,bt:v===1?'calc(100% - 52px)':'0%',bh:v===0?'0px':v===1?'40px':'10%',pt:v===2?'12%':'10px'}}
 function lbVars(o){return `--c:${o.c};--t:${o.t};--a:${o.a};--w:${o.w}px;--h:${o.h}px;--fs:${o.fs}px;--bt:${o.bt};--bh:${o.bh};--pt:${o.pt}`}
 function likeOpen(l,i){const o=lbLook(l);
   win({id:'w-like-'+i,title:l.t,cls:'pv lkd',w:340,x:.42+(i%4)*.05,y:.5,html:
@@ -756,7 +756,7 @@ OPEN.likes=()=>{
     $('.lk-f',el).innerHTML=`<button type="button" data-k="" aria-pressed="${!kind}">ALL</button>`+kinds.map(k=>`<button type="button" data-k="${k}" aria-pressed="${kind===k}">${KINDS[k][1]}</button>`).join('');
     $('.lb-shelves',el).innerHTML=kinds.filter(k=>!kind||k===kind).map(k=>{const items=LIKES.map((l,i)=>[l,i]).filter(([l])=>l.k===k);
       return `<section class="lb-shelf" aria-label="${KINDS[k][2]}"><div class="lb-head"><b>${KINDS[k][2]}</b><span>${items.length} ${items.length===1?KINDS[k][3]:KINDS[k][4]}</span><button type="button" data-s="-1" aria-label="Scroll left">‹</button><button type="button" data-s="1" aria-label="Scroll right">›</button></div>
-        <div class="lb-wrap"><div class="lb-row">${items.map(([l,i])=>{const o=lbLook(l);return `<button type="button" class="lb-sp ${l.k}" data-i="${i}" style="${lbVars(o)}" aria-label="${esc(l.t)}${l.by?', '+esc(l.by):''}"><span class="bd"></span><span class="tt">${esc(l.t)}</span><span class="au">${esc((l.by||'').toUpperCase())}</span></button>`}).join('')}</div><div class="lb-glass" style="--g:${LB_GLASS[k]}"></div></div></section>`}).join('');
+        <div class="lb-wrap"><div class="lb-row">${items.map(([l,i])=>{const o=lbLook(l);return `<button type="button" class="lb-sp ${l.k}" data-i="${i}" style="${lbVars(o)}" aria-label="${esc(l.t)}${l.by?', '+esc(l.by):''}"><span class="bd"></span><span class="tt">${esc(l.t)}</span></button>`}).join('')}</div><div class="lb-glass" style="--g:${LB_GLASS[k]}"></div></div></section>`}).join('');
     const n=LIKES.filter(l=>!kind||l.k===kind).length;
     $('.lk-n',el).textContent=n+(n===1?' item':' items')+' · click a spine to open it'};
   el.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){kind=b.dataset.k;draw();return}
