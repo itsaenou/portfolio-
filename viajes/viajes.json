@@ -8,17 +8,7 @@
         "viajes/gibraltar/mwp6kkcj-02.jpg",
         "viajes/gibraltar/mwp6kkcj-03.jpg"
       ],
-      "sitios": [],
-      "ciudades": [
-        {
-          "nombre": "oporo"
-        },
-        {
-          "nombre": "oporto",
-          "lat": 36.14626,
-          "lon": -5.45259
-        }
-      ]
+      "sitios": []
     },
     {
       "pais": "Reino Unido",
@@ -52,11 +42,6 @@
       ],
       "ciudades": [
         {
-          "nombre": "Por",
-          "lat": 41.29505,
-          "lon": -7.7467
-        },
-        {
           "nombre": "Porto",
           "lat": 41.15022,
           "lon": -8.61035
@@ -72,6 +57,25 @@
     {
       "pais": "Chequia",
       "cartel": "viajes/chequia/cartel-mwp6fbl6.jpg",
+      "fotos": [],
+      "sitios": []
+    },
+    {
+      "pais": "España",
+      "cartel": "",
+      "fotos": [],
+      "sitios": [],
+      "ciudades": [
+        {
+          "nombre": "Valdepeñas",
+          "lat": 38.7622,
+          "lon": -3.3842
+        }
+      ]
+    },
+    {
+      "pais": "Italia",
+      "cartel": "",
       "fotos": [],
       "sitios": []
     }

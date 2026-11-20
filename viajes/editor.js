@@ -15,12 +15,13 @@ const GEO={};let geoQ=Promise.resolve();
 function geocode(q){q=q.trim();if(!q)return Promise.resolve(null);if(GEO[q])return GEO[q];
   GEO[q]=geoQ=geoQ.then(()=>new Promise(r=>setTimeout(r,1100))).then(()=>fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=es&q='+encodeURIComponent(q)))
     .then(r=>r.ok?r.json():[]).then(d=>d&&d[0]?[+(+d[0].lat).toFixed(5),+(+d[0].lon).toFixed(5)]:null).catch(()=>null);return GEO[q]}
-async function addCity(t,name){name=name.trim();if(!name||t.ciudades.some(c=>norm(c.nombre)===norm(name)))return;
-  const c={nombre:name,lat:null,lon:null};t.ciudades.push(c);mark();const g=await geocode(name+', '+t.pais);if(g){c.lat=g[0];c.lon=g[1]}mark();redrawAll()}
+async function addCity(t,name,auto){name=name.trim();if(!name||t.ciudades.some(c=>norm(c.nombre)===norm(name)))return;
+  const c={nombre:name,lat:null,lon:null,_auto:!!auto};t.ciudades.push(c);mark();const g=await geocode(name+', '+t.pais);if(g){c.lat=g[0];c.lon=g[1]}mark();redrawAll()}
 async function locate(t,s){const q=s.direccion&&s.direccion.trim()?s.direccion+', '+t.pais:[s.nombre,s.ciudad,t.pais].filter(Boolean).join(', ');
   if(!s.nombre&&!s.direccion)return;s._st='Buscando la ubicación…';paintLoc(s);const g=await geocode(q)||(s.direccion?await geocode([s.nombre,s.ciudad,t.pais].filter(Boolean).join(', ')):null);
   if(g){s.lat=g[0];s.lon=g[1];s._st='Ubicado en el mapa ✓'}else{delete s.lat;delete s.lon;s._st='No encuentro esta dirección: revísala'}
-  paintLoc(s);mark();if(s.ciudad)addCity(t,s.ciudad);mapDraw&&mapDraw()}
+  paintLoc(s);mark();const was=s._city;if(was&&norm(was)!==norm(s.ciudad||'')&&!t.sitios.some(x=>x!==s&&norm(x.ciudad||'')===norm(was))){const k=t.ciudades.findIndex(c=>c._auto&&norm(c.nombre)===norm(was));if(k>=0)t.ciudades.splice(k,1)}
+  if(s.ciudad){s._city=s.ciudad;addCity(t,s.ciudad,true)}mapDraw&&mapDraw()}
 function paintLoc(s){const el=s._el&&s._el.querySelector('.loc');if(el)el.textContent=s._st||''}
 addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
 

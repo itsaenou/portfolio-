@@ -193,7 +193,8 @@ button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:poin
 .tv-land path.on{stroke-width:.5}.tv-land path.dim{opacity:.25}
 .tv-ink{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 .tv-ink path{fill:none;stroke:#111110;stroke-width:1;vector-effect:non-scaling-stroke;stroke-linecap:round;transition:opacity .2s,stroke-width .2s}
-.tv-ink .ar{stroke-width:.8;opacity:.75}
+.tv-ink .ar{stroke-width:.7;opacity:.35}
+.tv-ink .leg{stroke-dasharray:3 3}
 .tv-ink .dim,.tv-dot.dim,.tv-th.dim{opacity:.12}
 .tv-ink .hot{stroke-width:2}
 .tv-dot{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#111110;z-index:2;transition:transform .2s,opacity .2s}
@@ -862,14 +863,14 @@ function tvMapHTML(q,extra=''){
   const H=88.2,P=(la,lo)=>{const[x,y]=tvXY(la,lo);return[x,y*H/100]};const[ox,oy]=P(...TV_HOME);
   const rnd=(t,k)=>{const h=lbHash(t+k);return((h%1000)/1000)-.5};
   let ink='',html='';const W=10.6,Ht=19.5,placed=[];
-  const spots=TRIPS.map(t=>{const c=(t.ciudades||[]).filter(c=>c.lat!=null).map(c=>({n:c.nombre,p:P(c.lat,c.lon)}));return c.length?c:t.lat!=null?[{n:'',p:P(t.lat,t.lon)}]:[]});
+  const spots=TRIPS.map(t=>{const c=[];(t.ciudades||[]).filter(c=>c.lat!=null).forEach(k=>{const p=P(k.lat,k.lon);if(!c.some(o=>Math.hypot(o.p[0]-p[0],o.p[1]-p[1])<.8))c.push({n:k.nombre,p})});return c.length?c:t.lat!=null?[{n:'',p:P(t.lat,t.lon)}]:[]});
   const obst=spots.flat().map(({p:[x,y]})=>[x-1.6,y-1.6,3.2,3.2]).concat([[ox-2,oy-2,4,4]]);
   const free=(r)=>r[0]>=.5&&r[1]>=.5&&r[0]+r[2]<=99.5&&r[1]+r[3]<=H-.5&&!placed.concat(obst).some(o=>r[0]<o[0]+o[2]&&r[0]+r[2]>o[0]&&r[1]<o[1]+o[3]&&r[1]+r[3]>o[1]);
   const ANG=[-50,-130,50,130,0,180,-90,90];
   TRIPS.forEach((t,i)=>{if(!spots[i].length)return;const hit=!q||t.key.includes(q),dim=hit?'':' dim';
-    spots[i].forEach(({n,p:[x,y]},j)=>{const dx=x-ox,dy=y-oy,d=Math.hypot(dx,dy)||1,nx=-dy/d,ny=dx/d,a=rnd(t.pais+j,'a')*d*.9,b=rnd(t.pais+j,'b')*d*.9;
-      const loop=j===0&&lbHash(t.pais)%3===0?` C ${x+nx*6+dx/d*5} ${y+ny*6+dy/d*5} ${x+dx/d*9-nx*4} ${y+dy/d*9-ny*4} ${x} ${y}`:'';
-      ink+=`<path class="rt${dim}" data-r="${i}" d="M ${ox} ${oy} C ${ox+dx*.3+nx*a} ${oy+dy*.3+ny*a} ${ox+dx*.75+nx*b} ${oy+dy*.75+ny*b} ${x} ${y}${loop}"/>`;
+    spots[i].forEach(({n,p:[x,y]},j)=>{const[sx,sy]=j?spots[i][j-1].p:[ox,oy],dx=x-sx,dy=y-sy,d=Math.hypot(dx,dy)||1;
+      let nx=-dy/d,ny=dx/d;if(ny>0||(ny===0&&nx>0)){nx=-nx;ny=-ny}const k=j?.1:.18,cx=(sx+x)/2+nx*d*k,cy=(sy+y)/2+ny*d*k;
+      ink+=`<path class="rt${j?' leg':''}${dim}" data-r="${i}" d="M ${sx} ${sy} Q ${cx} ${cy} ${x} ${y}"/>`;
       html+=`<button type="button" class="tv-dot${j?' c':''}${dim}" data-i="${i}" style="left:${x}%;top:${y*100/H}%" aria-label="${esc(n||t.pais)}" title="${esc(n||t.pais)}">${j?'':`<span>${i+1}</span>`}${n?`<em>${esc(n)}</em>`:''}</button>`});
     (t.sitios||[]).forEach(s=>{if(s.lat==null)return;const[x,y]=P(s.lat,s.lon);html+=`<button type="button" class="tv-sd${dim}" data-i="${i}" style="left:${x}%;top:${y*100/H}%" title="${esc(s.nombre||'')}" aria-label="${esc(s.nombre||'')}" tabindex="-1"></button>`});
     const[x,y]=spots[i][0].p;let best=null;
