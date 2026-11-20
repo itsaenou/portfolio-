@@ -19,8 +19,17 @@
     {
       "pais": "Portugal",
       "cartel": "viajes/portugal/cartel-mwp6d71b.jpg",
-      "fotos": [],
-      "sitios": []
+      "fotos": [
+        "viajes/portugal/mwp6m0ey-01.jpg",
+        "viajes/portugal/mwp6m0ey-02.jpg"
+      ],
+      "sitios": [
+        {
+          "nombre": "BRITES",
+          "ciudad": "oporto",
+          "tipo": "comer"
+        }
+      ]
     },
     {
       "pais": "Alemania",
