@@ -2,8 +2,12 @@
   "paises": [
     {
       "pais": "Gibraltar",
-      "cartel": "",
-      "fotos": [],
+      "cartel": "viajes/gibraltar/cartel-mwp6kkcj.jpg",
+      "fotos": [
+        "viajes/gibraltar/mwp6kkcj-01.jpg",
+        "viajes/gibraltar/mwp6kkcj-02.jpg",
+        "viajes/gibraltar/mwp6kkcj-03.jpg"
+      ],
       "sitios": []
     },
     {
