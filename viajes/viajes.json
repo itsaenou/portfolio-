@@ -8,19 +8,15 @@
         "viajes/gibraltar/mwp6kkcj-02.jpg",
         "viajes/gibraltar/mwp6kkcj-03.jpg"
       ],
-      "sitios": [
-        {
-          "nombre": "brites",
-          "ciudad": "oporto",
-          "tipo": "comer",
-          "media": [
-            "viajes/gibraltar/sitio-mwp6o5wc-1-1.jpg"
-          ]
-        }
-      ],
+      "sitios": [],
       "ciudades": [
         {
           "nombre": "oporo"
+        },
+        {
+          "nombre": "oporto",
+          "lat": 36.14626,
+          "lon": -5.45259
         }
       ]
     },
