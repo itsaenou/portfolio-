@@ -47,7 +47,12 @@ const st=document.createElement('style');st.textContent=`
 .tvx .rm:hover,.tvx .rm:focus-visible{background:var(--red)}
 .tvx .phg{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
 .tvx .phg>div,.tvx .phg>button{position:relative;aspect-ratio:1;background:#222}
-.tvx .phg img{width:100%;height:100%;object-fit:cover;display:block}
+.tvx .phg img,.tvx .phg video{width:100%;height:100%;object-fit:cover;display:block}
+.tvx .rmed{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:4px}
+.tvx .rmed>div{position:relative;aspect-ratio:1;background:#222}.tvx .rmed img,.tvx .rmed video{width:100%;height:100%;object-fit:cover;display:block}
+.tvx .rmed .rm{width:22px;height:22px;top:3px;right:3px;font-size:10px}
+.tvx .addmed{aspect-ratio:1;border:1px dashed #ffffff44;color:#cfcfca;font:9px/1.3 var(--mono);letter-spacing:.04em;padding:4px}
+.tvx .addmed:hover,.tvx .addmed:focus-visible{border-color:var(--yellow);color:#fff}
 .tvx .addph{display:grid;place-items:center;border:2px dashed #ffffff44;color:#cfcfca;font:12px/1.5 var(--mono);letter-spacing:.06em;text-align:center;padding:10px}
 .tvx .addph:hover,.tvx .addph:focus-visible{border-color:var(--yellow);color:#fff}
 .tvx .tv-rec li{position:relative;gap:8px}
@@ -78,7 +83,7 @@ async function shrink(file,max,q){const bmp=await createImageBitmap(file).catch(
   const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(bmp,0,0,c.width,c.height);
   return new Promise(r=>c.toBlob(b=>b.arrayBuffer().then(r),'image/jpeg',q))}
 function toJSON(){return JSON.stringify({paises:TRIPS.map(t=>{const o={pais:t.pais};if(t.cuando)o.cuando=t.cuando;o.cartel=srcOf(t.cartel)||'';o.fotos=t.fotos.map(srcOf);
-  o.sitios=t.sitios.filter(x=>x.nombre&&x.nombre.trim()).map(x=>{const r={nombre:x.nombre.trim()};if(x.ciudad)r.ciudad=x.ciudad.trim();r.tipo=x.tipo||'otro';if(x.nota)r.nota=x.nota.trim();if(x.url)r.url=x.url;return r});
+  o.sitios=t.sitios.filter(x=>x.nombre&&x.nombre.trim()).map(x=>{const r={nombre:x.nombre.trim()};if(x.ciudad)r.ciudad=x.ciudad.trim();r.tipo=x.tipo||'otro';if(x.direccion&&x.direccion.trim())r.direccion=x.direccion.trim();if(x.nota)r.nota=x.nota.trim();if(x.media&&x.media.length)r.media=x.media.map(srcOf);if(x.url)r.url=x.url;return r});
   if(t.latC!=null){o.lat=t.latC;o.lon=t.lonC}return o})},null,2)+'\n'}
 async function publish(){
   if(saving)return;if(!getTok()){tokenPanel();return}
@@ -87,10 +92,12 @@ async function publish(){
     const ts=Date.now().toString(36),files=[];
     for(const t of TRIPS){const sl=slug(t.pais);
       if(t.cartel&&typeof t.cartel==='object')files.push({obj:t,key:'cartel',path:`viajes/${sl}/cartel-${ts}.jpg`,file:t.cartel.file,max:2000,q:.88});
-      t.fotos.forEach((f,i)=>{if(f&&typeof f==='object')files.push({arr:t.fotos,i,path:`viajes/${sl}/${ts}-${String(i+1).padStart(2,'0')}.jpg`,file:f.file,max:1600,q:.84})})}
+      const ext=f=>f.video?(f.file.name.match(/\.(mp4|mov|webm|m4v)$/i)||['','mp4'])[1].toLowerCase():'jpg';
+      t.fotos.forEach((f,i)=>{if(f&&typeof f==='object')files.push({arr:t.fotos,i,path:`viajes/${sl}/${ts}-${String(i+1).padStart(2,'0')}.${ext(f)}`,file:f.file,video:f.video,max:1600,q:.84})});
+      t.sitios.forEach((s,si)=>(s.media||[]).forEach((f,i)=>{if(f&&typeof f==='object')files.push({arr:s.media,i,path:`viajes/${sl}/sitio-${ts}-${si+1}-${i+1}.${ext(f)}`,file:f.file,video:f.video,max:1600,q:.84})}))}
     const ref=await gh('/git/ref/heads/'+BRANCH),head=ref.object.sha,base=(await gh('/git/commits/'+head)).tree.sha,tree=[];
-    let k=0;for(const f of files){bar(`Subiendo imágenes ${++k}/${files.length}…`);
-      const blob=await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:b64(await shrink(f.file,f.max,f.q)),encoding:'base64'})});
+    let k=0;for(const f of files){bar(`Subiendo archivos ${++k}/${files.length}…`);
+      const blob=await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:b64(f.video?await f.file.arrayBuffer():await shrink(f.file,f.max,f.q)),encoding:'base64'})});
       tree.push({path:f.path,mode:'100644',type:'blob',sha:blob.sha})}
     const json=(()=>{const keep=files.map(f=>f.obj?[f.obj,f.obj.cartel]:[f.arr,f.arr[f.i]]);files.forEach(f=>{if(f.obj)f.obj.cartel=f.path;else f.arr[f.i]=f.path});
       const j=toJSON();return{j,undo:()=>files.forEach((f,n)=>{if(f.obj)f.obj.cartel=keep[n][1];else f.arr[f.i]=keep[n][1]})}})();
@@ -156,34 +163,40 @@ OPEN.travel=()=>{
 function redrawAll(){mapDraw&&mapDraw();const fs=$('#tvedfs');if(fs&&!fs.hidden)edit(+fs.dataset.i,true)}
 
 /* ---------- pantalla completa editable ---------- */
-function pick(multiple,cb){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.multiple=multiple;inp.onchange=()=>cb([...inp.files]);inp.click()}
-const asObj=f=>({file:f,url:URL.createObjectURL(f)});
+function pick(multiple,cb,acc='image/*'){const inp=document.createElement('input');inp.type='file';inp.accept=acc;inp.multiple=multiple;inp.onchange=()=>cb([...inp.files]);inp.click()}
+const MAXV=45*1024*1024;
+const asObj=f=>({file:f,url:URL.createObjectURL(f),video:f.type.startsWith('video/')});
+const okFiles=fs=>{const big=fs.filter(f=>f.type.startsWith('video/')&&f.size>MAXV);if(big.length)bar(`«${big[0].name}» pesa ${(big[0].size/1048576).toFixed(0)} MB: los vídeos pueden pesar como máximo 45 MB. Recórtalo o expórtalo más ligero.`);return fs.filter(f=>!(f.type.startsWith('video/')&&f.size>MAXV))};
+const isV=x=>x&&typeof x==='object'?x.video:tvVid(x);
+const thumb=x=>isV(x)?`<video src="${esc(srcOf(x))}" muted playsinline preload="metadata"></video>`:`<img src="${esc(srcOf(x))}" alt="">`;
 function dropOn(node,cb){node.addEventListener('dragover',e=>{e.preventDefault();node.classList.add('over')});node.addEventListener('dragleave',()=>node.classList.remove('over'));
-  node.addEventListener('drop',e=>{e.preventDefault();node.classList.remove('over');const fs=[...e.dataTransfer.files].filter(f=>f.type.startsWith('image/'));if(fs.length)cb(fs)})}
+  node.addEventListener('drop',e=>{e.preventDefault();node.classList.remove('over');const fs=[...e.dataTransfer.files].filter(f=>f.type.startsWith('image/')||(node.dataset.vid&&f.type.startsWith('video/')));if(fs.length)cb(fs)})}
 window.tvOpenFS=i=>edit(i);
 function edit(i,keepScroll){
   let fs=$('#tvedfs');
   if(!fs){fs=document.createElement('section');fs.id='tvedfs';fs.className='tv-fs';fs.setAttribute('role','dialog');fs.setAttribute('aria-modal','true');document.body.appendChild(fs)}
   if(!fs.dataset.ed){fs.dataset.ed=1;
-    fs.addEventListener('keydown',e=>{if(e.key==='Escape'&&!e.target.matches('input,textarea')){e.stopPropagation();closeEd()}},true)}
+    fs.addEventListener('keydown',e=>{if(e.key!=='Escape')return;e.stopPropagation();if(e.target.matches('input,textarea'))e.target.blur();else closeEd()},true)}
   fs.classList.add('tvx');const n=TRIPS.length;if(!n){closeEd();return}i=(i+n)%n;const t=TRIPS[i];fs.dataset.i=i;
   const y=fs.scrollTop,tt={...t,cartel:srcOf(t.cartel)};
   fs.innerHTML=`<button type="button" class="tv-x" data-a="x" aria-label="Volver al mapa">✕</button>${n>1?`<button type="button" class="tv-nav p" data-a="p" aria-label="País anterior">‹</button><button type="button" class="tv-nav n" data-a="n" aria-label="País siguiente">›</button>`:''}
     <div class="tv-hero"><button type="button" class="slot${tt.cartel?'':' empty'}" data-a="cartel" aria-label="Cambiar el cartel de ${esc(t.pais)}">${tt.cartel?`<img src="${esc(tt.cartel)}" alt="">`:''}<span class="hint">${tt.cartel?'Cambiar cartel<br>(pulsa o suelta una imagen)':'Suelta aquí tu cartel<br>o pulsa para elegirlo<br><br>vertical A · 1240×1754 px'}</span></button>
       <p><b>${esc(t.pais)}</b></p><input class="when" value="${esc(t.cuando||'')}" placeholder="¿Cuándo fuiste? (opcional)" aria-label="Cuándo fuiste"></div>
-    <div class="tv-more"><h3>Fotos · ${t.fotos.length}</h3><div class="phg">${t.fotos.map((f,k)=>`<div><img src="${esc(srcOf(f))}" alt=""><button type="button" class="rm" data-a="rmph" data-k="${k}" aria-label="Quitar foto ${k+1}">✕</button></div>`).join('')}<button type="button" class="addph" data-a="addph">+ Añadir fotos<br>(pulsa o suéltalas aquí)</button></div>
+    <div class="tv-more"><h3>Fotos y vídeos · ${t.fotos.length}</h3><div class="phg" data-vid="1">${t.fotos.map((f,k)=>`<div>${thumb(f)}<button type="button" class="rm" data-a="rmph" data-k="${k}" aria-label="Quitar foto ${k+1}">✕</button></div>`).join('')}<button type="button" class="addph" data-a="addph">+ Añadir fotos o vídeos<br>(pulsa o suéltalos aquí)</button></div>
     <h3>Recomendaciones · ${t.sitios.length}</h3><ul class="tv-rec">${t.sitios.map((s,k)=>`<li data-k="${k}"><button type="button" class="rm" data-a="rmrec" aria-label="Quitar sitio">✕</button>
       <div class="chips">${TYPES.map(([v,l])=>`<button type="button" data-a="tipo" data-v="${v}" aria-pressed="${(s.tipo||'otro')===v}">${l}</button>`).join('')}</div>
-      <input class="n" data-f="nombre" value="${esc(s.nombre||'')}" placeholder="Nombre del sitio" aria-label="Nombre del sitio"><input data-f="ciudad" value="${esc(s.ciudad||'')}" placeholder="Ciudad" aria-label="Ciudad"><textarea data-f="nota" rows="2" placeholder="Tu recomendación (opcional)" aria-label="Tu recomendación">${esc(s.nota||'')}</textarea></li>`).join('')}
+      <input class="n" data-f="nombre" value="${esc(s.nombre||'')}" placeholder="Nombre del sitio" aria-label="Nombre del sitio"><input data-f="direccion" value="${esc(s.direccion||'')}" placeholder="Dirección (calle, número, ciudad)" aria-label="Dirección"><input data-f="ciudad" value="${esc(s.ciudad||'')}" placeholder="Ciudad" aria-label="Ciudad"><textarea data-f="nota" rows="2" placeholder="Tu recomendación (opcional)" aria-label="Tu recomendación">${esc(s.nota||'')}</textarea><div class="rmed">${(s.media||[]).map((f,m)=>`<div>${thumb(f)}<button type="button" class="rm" data-a="rmmed" data-m="${m}" aria-label="Quitar">✕</button></div>`).join('')}<button type="button" class="addmed" data-a="addmed">+ foto o vídeo</button></div></li>`).join('')}
       <li class="addrec" role="button" tabindex="0" data-a="addrec">+ Añadir sitio</li></ul></div>
     <div class="tvx-foot"><span class="tve-st"></span><button type="button" class="tve-btn del" data-a="del">Quitar país</button><button type="button" class="tve-btn tve-pub" data-a="pub">Guardar y publicar</button></div>`;
-  const slot=$('.slot',fs);dropOn(slot,f=>{t.cartel=asObj(f[0]);mark();edit(i,true)});dropOn($('.phg',fs),f=>{t.fotos.push(...f.map(asObj));mark();edit(i,true)});
+  const slot=$('.slot',fs);dropOn(slot,f=>{t.cartel=asObj(f[0]);mark();edit(i,true)});dropOn($('.phg',fs),f=>{f=okFiles(f);if(!f.length)return;t.fotos.push(...f.map(asObj));mark();edit(i,true)});
   $('.when',fs).oninput=e=>{t.cuando=e.target.value;mark()};
-  $$('.tv-rec li[data-k]',fs).forEach(li=>{const s=t.sitios[+li.dataset.k];$$('[data-f]',li).forEach(inp=>inp.oninput=()=>{s[inp.dataset.f]=inp.value;mark()})});
+  $$('.tv-rec li[data-k]',fs).forEach(li=>{const s=t.sitios[+li.dataset.k];$$('[data-f]',li).forEach(inp=>inp.oninput=()=>{s[inp.dataset.f]=inp.value;mark()});li.dataset.vid=1;dropOn(li,f=>{f=okFiles(f);if(!f.length)return;(s.media=s.media||[]).push(...f.map(asObj));mark();edit(i,true)})});
   fs.onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
     if(a==='x')closeEd();else if(a==='p')edit(i-1);else if(a==='n')edit(i+1);
     else if(a==='cartel')pick(false,f=>{if(f[0]){t.cartel=asObj(f[0]);mark();edit(i,true)}});
-    else if(a==='addph')pick(true,f=>{t.fotos.push(...f.map(asObj));mark();edit(i,true)});
+    else if(a==='addph')pick(true,f=>{f=okFiles(f);if(!f.length)return;t.fotos.push(...f.map(asObj));mark();edit(i,true)},'image/*,video/*');
+    else if(a==='addmed'){const s=t.sitios[+b.closest('li').dataset.k];pick(true,f=>{f=okFiles(f);if(!f.length)return;(s.media=s.media||[]).push(...f.map(asObj));mark();edit(i,true)},'image/*,video/*')}
+    else if(a==='rmmed'){const s=t.sitios[+b.closest('li').dataset.k];s.media.splice(+b.dataset.m,1);mark();edit(i,true)}
     else if(a==='rmph'){t.fotos.splice(+b.dataset.k,1);mark();edit(i,true)}
     else if(a==='addrec'){t.sitios.push({nombre:'',ciudad:'',tipo:'comer',nota:''});mark();edit(i,true);const ins=$$('.tv-rec input.n',fs);ins[ins.length-1].focus()}
     else if(a==='rmrec'){t.sitios.splice(+b.closest('li').dataset.k,1);mark();edit(i,true)}

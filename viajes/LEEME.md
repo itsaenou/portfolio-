@@ -1,5 +1,7 @@
 # travel_log · cómo añadir un país
 
+**Lo más fácil:** entra en https://itsaenou.github.io/portfolio-/#editar y hazlo todo de forma visual. Lo de abajo es para editar a mano.
+
 El apartado de viajes de la web se rellena solo con este archivo: `viajes/viajes.json`.
 Mientras la lista `paises` esté vacía, el icono **travel_log** no aparece en el escritorio.
 En cuanto añades el primer país, aparece.
@@ -31,7 +33,8 @@ Entre dos países va una coma.
       "cartel": "viajes/italia/cartel.jpg",
       "fotos": ["viajes/italia/01.jpg", "viajes/italia/02.jpg"],
       "sitios": [
-        { "nombre": "Trattoria da Enzo", "ciudad": "Roma", "tipo": "comer", "nota": "La mejor carbonara del viaje." },
+        { "nombre": "Trattoria da Enzo", "ciudad": "Roma", "tipo": "comer", "direccion": "Via Roma 12, 00184 Roma",
+          "nota": "La mejor carbonara del viaje.", "media": ["viajes/italia/enzo-1.jpg", "viajes/italia/enzo-2.mp4"] },
         { "nombre": "Galleria Borghese", "ciudad": "Roma", "tipo": "ver", "nota": "Reservad antes." }
       ]
     },
@@ -49,7 +52,8 @@ Entre dos países va una coma.
   Si es un sitio que el mapa no conoce, añade `"lat": 36.14, "lon": -5.35`.
 - **cartel**: si lo dejas vacío (`""`), sale un cartel provisional en blanco con el nombre del país.
 - **tipo** de sitio: `comer`, `ver`, `dormir` u `otro`.
-- **cuando**, **nota**, **ciudad**: opcionales.
+- **cuando**, **nota**, **ciudad**, **direccion**, **media**: opcionales. En **media** y en **fotos** puedes poner imágenes (.jpg) o vídeos (.mp4, .mov, .webm; máximo 45 MB cada uno).
+- Si un sitio tiene **direccion**, el enlace de Google Maps va a esa dirección.
 - Cada sitio enlaza solo a Google Maps con su nombre y ciudad. Si quieres otro enlace, añade `"url": "https://..."`.
 
 Guarda con **Commit changes**. En uno o dos minutos está en la web.
